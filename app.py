@@ -22,7 +22,7 @@ def download_file_from_google_drive(url, destination):
 
 # URLs for the files on Google Drive
 URL_DATASET_1 = 'https://docs.google.com/spreadsheets/d/1fvFcosmNcIxqH0dy56aZU4Cizknm777D/edit?usp=drive_link&ouid=109982736904894454294&rtpof=true&sd=true'
-URL_DATASET_2 = 'https://docs.google.com/spreadsheets/d/1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv/edit?usp=drive_link&ouid=109982736904894454294&rtpof=true&sd=true'
+URL_DATASET_2 = 'https://docs.google.com/spreadsheets/d/1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv/edit?usp=sharing&ouid=109982736904894454294&rtpof=true&sd=true'
 URL_DATASET_3 = 'https://docs.google.com/spreadsheets/d/116E6HD17qkspBEyRZOGE-vRpEyKL0JFu/edit?usp=drive_link&ouid=109982736904894454294&rtpof=true&sd=true'
 URL_DATASET_5 = 'https://drive.google.com/file/d/1wV0PnquESSPVv1xiJ8TgNXsDHvyzmFyM/view?usp=drive_link'
 URL_GFF_FILE = 'https://drive.google.com/file/d/1yAq-K1VdJF1t0wrE-p787WmX-mJqDIEf/view?usp=drive_link'
@@ -30,9 +30,8 @@ URL_GFF_FILE = 'https://drive.google.com/file/d/1yAq-K1VdJF1t0wrE-p787WmX-mJqDIE
 # Cache the datasets to avoid downloading them repeatedly
 
 def load_dataset_1():
-    dataset=download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
-    dataset=pd.read_excel(dataset, header=1)
-    return dataset
+    download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
+    return pd.read_excel('Acession-Numbers.xlsx, header=1)
 
 
 def load_dataset_2():
