@@ -1,3 +1,4 @@
+%%writefile app.py
 
 import streamlit as st
 import pandas as pd
@@ -10,56 +11,57 @@ from plotly.subplots import make_subplots
 from pyvis.network import Network
 from pycirclize.parser import Gff
 import numpy as np
-import requests
-import tempfile
+import os
 import pickle
+from google.cloud import storage
 
-# Function to download files from Google Drive
-def download_file_from_google_drive(url, destination):
-    response = requests.get(url)
-    with open(destination, 'wb') as f:
-        f.write(response.content)
+# Function to download files from Google Cloud Storage
+def download_file_from_gcs(bucket_name, source_blob_name, destination_file_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+    st.write(f"File downloaded successfully: {destination_file_name}")
 
-# URLs for the files on Google Drive
-URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
-URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
-URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
-URL_DATASET_5 = 'https://drive.google.com/uc?export=download&id=1wV0PnquESSPVv1xiJ8TgNXsDHvyzmFyM'
-URL_GFF_FILE = 'https://drive.google.com/uc?export=download&id=1yAq-K1VdJF1t0wrE-p787WmX-mJqDIEf'
+# GCS bucket and file paths
+GCS_BUCKET_NAME = 'data_1808'
+GCS_DATASET_1 = 'Acession-Numbers.xlsx'
+GCS_DATASET_2 = 'Lineage-drug-resitance-classifiation.xlsx'
+GCS_DATASET_3 = 'WHO-resistance-associated-mutations.xlsx'
+GCS_DATASET_5 = 'final_dict.pkl'
+GCS_GFF_FILE = 'genomic.gff'
 
-# Cache the datasets to avoid downloading them repeatedly
+# Functions to load datasets
 
 def load_dataset_1():
-    dataset=download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
-    dataset=pd.read_excel('Acession-Numbers.xlsx', header=1)
-    return dataset
-
+    download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_1, 'Acession-Numbers.xlsx')
+    return pd.read_excel('Acession-Numbers.xlsx', header=1)
 
 def load_dataset_2():
-    download_file_from_google_drive(URL_DATASET_2, 'Lineage-drug-resitance-classifiation.xlsx')
+    download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_2, 'Lineage-drug-resitance-classifiation.xlsx')
     return pd.read_excel('Lineage-drug-resitance-classifiation.xlsx', header=1)
 
-
 def load_dataset_3():
-    download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
+    download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-
 def load_dataset_5():
-    download_file_from_google_drive(URL_DATASET_5, 'final_dict.pkl')
+    download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_5, 'final_dict.pkl')
     with open('final_dict.pkl', 'rb') as f:
         return pickle.load(f)
 
 # Function to load the GFF file
 
 def load_gff_file():
-    download_file_from_google_drive(URL_GFF_FILE, 'genomic.gff')
+    download_file_from_gcs(GCS_BUCKET_NAME, GCS_GFF_FILE, 'genomic.gff')
     return Gff('genomic.gff')
 
 def go_to_main():
     st.session_state['page'] = 'main'
+
 def go_to_resistance_mutations():
     st.session_state['page'] = 'resistance_mutations'
+
 def go_to_genome_data():
     st.session_state['page'] = 'genome_data'
 
