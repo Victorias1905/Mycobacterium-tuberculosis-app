@@ -7,3 +7,4 @@ pyvis
 pycirclize
 openpyxl
 requests
+google-cloud-storage
