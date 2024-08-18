@@ -15,6 +15,7 @@ import pickle
 from google.cloud import storage
 
 # Function to download files from Google Cloud Storage
+@st.cache_data
 def download_file_from_gcs(bucket_name, source_blob_name, destination_file_name):
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
@@ -31,26 +32,26 @@ GCS_DATASET_5 = 'final_dict.pkl'
 GCS_GFF_FILE = 'genomic.gff'
 
 # Functions to load datasets
-
+@st.cache_data
 def load_dataset_1():
     download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_1, 'Acession-Numbers.xlsx')
     return pd.read_excel('Acession-Numbers.xlsx', header=1)
-
+@st.cache_data
 def load_dataset_2():
     download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_2, 'Lineage-drug-resitance-classifiation.xlsx')
     return pd.read_excel('Lineage-drug-resitance-classifiation.xlsx', header=1)
-
+@st.cache_data
 def load_dataset_3():
     download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
-
+@st.cache_data
 def load_dataset_5():
     download_file_from_gcs(GCS_BUCKET_NAME, GCS_DATASET_5, 'final_dict.pkl')
     with open('final_dict.pkl', 'rb') as f:
         return pickle.load(f)
 
 # Function to load the GFF file
-
+@st.cache_data
 def load_gff_file():
     download_file_from_gcs(GCS_BUCKET_NAME, GCS_GFF_FILE, 'genomic.gff')
     return Gff('genomic.gff')
