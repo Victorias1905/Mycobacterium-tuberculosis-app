@@ -31,29 +31,29 @@ URL_GFF_FILE = 'https://drive.google.com/uc?export=download&id=1yAq-K1VdJF1t0wrE
 
 
 # Cache the datasets to avoid downloading them repeatedly
-@st.cache_data
+
 def load_dataset_1():
     dataset=download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
     dataset=pd.read_excel('Acession-Numbers.xlsx', header=1)
     return dataset
 
-@st.cache_data
+
 def load_dataset_2():
     download_file_from_google_drive(URL_DATASET_2, 'Lineage-drug-resitance-classifiation.xlsx')
     return pd.read_excel('Lineage-drug-resitance-classifiation.xlsx', header=1)
-@st.cache_data
+
 def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-@st.cache_data
+
 def load_dataset_5():
     download_file_from_google_drive(URL_DATASET_5, 'final_dict.pkl')
     with open('final_dict.pkl', 'rb') as f:
         return pickle.load(f)
 
 # Function to load the GFF file
-@st.cache_data
+
 def load_gff_file():
     download_file_from_google_drive(URL_GFF_FILE, 'genomic.gff')
     return Gff('genomic.gff')
