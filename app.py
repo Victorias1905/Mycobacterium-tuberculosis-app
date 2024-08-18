@@ -31,7 +31,7 @@ URL_GFF_FILE = 'https://drive.google.com/file/d/1yAq-K1VdJF1t0wrE-p787WmX-mJqDIE
 
 def load_dataset_1():
     download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
-    return pd.read_excel('Acession-Numbers.xlsx, header=1)
+    return pd.read_excel('Acession-Numbers.xlsx', header=1)
 
 
 def load_dataset_2():
