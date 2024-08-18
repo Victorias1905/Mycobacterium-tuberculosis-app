@@ -48,7 +48,7 @@ def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-@st.cache_data
+
 def load_dataset_5():
 
     download_file_from_google_drive(URL_DATASET_5, 'final_dict.pkl')
