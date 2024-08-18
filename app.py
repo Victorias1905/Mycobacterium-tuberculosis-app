@@ -15,10 +15,12 @@ import tempfile
 import pickle
 
 
+
 def download_file_from_google_drive(url, destination):
     response = requests.get(url)
+    response.raise_for_status()
     with open(destination, 'wb') as f:
-        f.write(response.content)
+        f.write(response.content) 
 
 # URLs for the files on Google Drive
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
@@ -48,6 +50,7 @@ def load_dataset_3():
 
 @st.cache_data
 def load_dataset_5():
+
     download_file_from_google_drive(URL_DATASET_5, 'final_dict.pkl')
     with open('final_dict.pkl', 'rb') as f:
         return pickle.load(f)
