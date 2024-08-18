@@ -8,3 +8,4 @@ pycirclize
 openpyxl
 requests
 google-cloud-storage
+st-files-connection
