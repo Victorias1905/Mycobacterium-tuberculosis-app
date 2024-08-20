@@ -14,7 +14,7 @@ import requests
 import tempfile
 import pickle
 import gzip
-import gdown
+
 
 
 
@@ -59,7 +59,6 @@ def load_dataset_4():
 country_origin = load_dataset_1()
 lineage_country = load_dataset_2()
 resistance_mutations = load_dataset_3()
-
 genomic=load_dataset_4()
 def go_to_main():
     st.session_state['page'] = 'main'
