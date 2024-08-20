@@ -43,13 +43,13 @@ def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-@st.cache_data
+@st.cache(show_spinner=False, suppress_st_warning=True)
 def load_dataset_5():
 
     file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
     url = f"https://drive.google.com/uc?id={file_id}"
     output = 'final_dict.pkl.gz'
-    gdown.download(url, output, quiet=True)
+    gdown.download(url, output, quiet=False)
     with gzip.open('final_dict.pkl.gz', 'rb') as f:
         return pickle.load(f)
 
