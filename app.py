@@ -14,7 +14,7 @@ import requests
 import tempfile
 import pickle
 import gzip
-import gdown
+
 
 def download_file_from_google_drive(url, destination):
     response = requests.get(url)
