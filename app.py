@@ -25,9 +25,7 @@ def download_file_from_google_drive(url, destination):
     response.raise_for_status()
     with open(destination, 'wb') as f:
         f.write(response.content)
-url='https://github.com/Victorias1905/Mycobacterium-tuberculosis-app/blob/main/ne_110m_admin_0_countries.shp'
 
-africa=download_file_from_google_drive(url, 'africa.shp')
 
 
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
