@@ -26,6 +26,7 @@ def download_file_from_google_drive(url, destination):
     with open(destination, 'wb') as f:
         f.write(response.content)
 url='https://github.com/Victorias1905/Mycobacterium-tuberculosis-app/blob/main/ne_110m_admin_0_countries.shp'
+local_filename = "yourfile.shp"
 response = requests.get(url)
 with open(local_filename, 'wb') as file:
     file.write(response.content)
