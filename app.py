@@ -49,7 +49,7 @@ def load_dataset_5():
     file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
     url = f"https://drive.google.com/uc?id={file_id}"
     output = 'final_dict.pkl.gz'
-    gdown.download(url, output, quiet=False)
+    gdown.download(url, output, quiet=True)
     with gzip.open('final_dict.pkl.gz', 'rb') as f:
         return pickle.load(f)
 
