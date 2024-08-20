@@ -13,6 +13,10 @@ import numpy as np
 import requests
 import tempfile
 import pickle
+import gzip
+import gdown
+
+
 
 
 
@@ -20,19 +24,13 @@ def download_file_from_google_drive(url, destination):
     response = requests.get(url)
     response.raise_for_status()
     with open(destination, 'wb') as f:
-        f.write(response.content) 
+        f.write(response.content)
 
-# URLs for the files on Google Drive
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
-URL_DATASET_5 = 'https://drive.google.com/uc?export=download&id=1wV0PnquESSPVv1xiJ8TgNXsDHvyzmFyM'
-URL_GFF_FILE = 'https://drive.google.com/uc?export=download&id=1yAq-K1VdJF1t0wrE-p787WmX-mJqDIEf'
-
-
-
-
-# Cache the datasets to avoid downloading them repeatedly
+gff_file='https://drive.google.com/uc?export=download&id=1MWmwHqhv9QBGvRPwFhgU1JFVuxqmQX7w'
+download_file_from_google_drive(gff_file, 'gff_file.gff')
 @st.cache_data
 def load_dataset_1():
     dataset=download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
@@ -43,23 +41,27 @@ def load_dataset_1():
 def load_dataset_2():
     download_file_from_google_drive(URL_DATASET_2, 'Lineage-drug-resitance-classifiation.xlsx')
     return pd.read_excel('Lineage-drug-resitance-classifiation.xlsx', header=1)
+
 @st.cache_data
 def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-
+@st.cache_data
 def load_dataset_5():
 
-    download_file_from_google_drive(URL_DATASET_5, 'final_dict.pkl')
-    with open('final_dict.pkl', 'rb') as f:
+    file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
+    url = f"https://drive.google.com/uc?id={file_id}"
+    output = 'final_dict.pkl.gz'
+    gdown.download(url, output, quiet=False)
+    with gzip.open('final_dict.pkl.gz', 'rb') as f:
         return pickle.load(f)
 
-# Function to load the GFF file
-@st.cache_data
-def load_gff_file():
-    download_file_from_google_drive(URL_GFF_FILE, 'genomic.gff')
-    return Gff('genomic.gff')
+
+country_origin = load_dataset_1()
+lineage_country = load_dataset_2()
+resistance_mutations = load_dataset_3()
+final_dict = load_dataset_5()
 
 def go_to_main():
     st.session_state['page'] = 'main'
@@ -84,24 +86,17 @@ with col3:
 
 if st.session_state['page'] == 'main':
     st.title("Mycobacterium tuberculosis - Africa")
-    country_origin = load_dataset_1()
     country_counts = country_origin['Country'].value_counts()
-
-    lineage_country = load_dataset_2()
     filtered_lineage_country = lineage_country.dropna(subset=['Lineage'])
     filtered_lineage_country = filtered_lineage_country[filtered_lineage_country['Lineage'] != '-']
-
     country_ids = lineage_country['Country'].unique().tolist()
     col1, col2 = st.columns(2)
 
     with col1:
         selected_country = st.selectbox("Select Country", country_ids)
-
     unique_countries = filtered_lineage_country['Country'].unique()
-
     filtered_df = filtered_lineage_country[filtered_lineage_country['Country'] == selected_country]
     unique_drugs = filtered_df['Drug'].unique()
-
     color_map = {drug: color for drug, color in zip(unique_drugs, px.colors.qualitative.Safe)}
     left_col, right_col = st.columns([2, 3])
 
@@ -163,7 +158,6 @@ if st.session_state['page'] == 'main':
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
     africa = world[(world['continent'] == 'Africa')]
     light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
-
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
     africa.plot(ax=ax, cmap=light_cmap, edgecolor='black', linewidth=0.75)
 
@@ -179,7 +173,6 @@ if st.session_state['page'] == 'main':
 
 elif st.session_state['page'] == 'resistance_mutations':
     st.subheader("Resistance Mutations")
-    resistance_mutations = load_dataset_3()
     drug_mapping = {
         'AMI': 'Amikacin',
         'BDQ': 'Bedaquiline',
@@ -220,15 +213,16 @@ elif st.session_state['page'] == 'resistance_mutations':
 
 elif st.session_state['page'] == 'genome_data':
     st.subheader("Genome Data")
-    gff = load_gff_file()
-    final_dict = load_dataset_5()
-    resistance_mutations = load_dataset_3()
-    drug_position = resistance_mutations.groupby('Drug')['Genomic position '].apply(list).to_dict()
-    lineage_country = load_dataset_2()
-    sample_ids = lineage_country['Name'].unique().tolist()
-    selected_sample = st.selectbox("Select Sample ID", sample_ids)
+    Lineage_dictionary=dict(zip(lineage_country['Name'], lineage_country['Lineage']))
+    Drug_dictionary=dict(zip(lineage_country['Name'], lineage_country['Drug']))
+    country_dictionary=dict(zip(country_origin['Name'], country_origin['Country']))
+
+    gff = Gff(gff_file)
 
     genome_length = 4411532
+    drug_position = resistance_mutations.groupby('Drug')['Genomic position '].apply(list).to_dict()
+    sample_ids = lineage_country['Name'].unique().tolist()
+    selected_sample = st.selectbox("Select Sample ID", sample_ids)
 
     def plot_original():
         plt.figure(figsize=(50, 10))
@@ -244,23 +238,24 @@ elif st.session_state['page'] == 'genome_data':
         plt.ylim(0.75, 1.25)
         plt.yticks([])
         st.pyplot(plt.gcf())
-        plt.close()
 
-    st.write("Places of resistance associated mutations")
-    plot_original()
 
     plt.figure(figsize=(50, 10))
+
     selected_positions = final_dict.get(selected_sample, [])
     selected_positions = selected_positions.replace('[','').replace(']','').split(',')
     selected_positions = [int(pos.strip()) for pos in selected_positions if pos.strip().isdigit()]
-
+    selected_country=country_dictionary.get(selected_sample)
+    selected_lineage=Lineage_dictionary.get(selected_sample)
+    selected_drug=Drug_dictionary.get(selected_sample)
     for pos in set(selected_positions):
         plt.axvline(x=int(pos), color='red')
 
     plt.xlim(0, genome_length)
     plt.ylim(0.75, 1.25)
+
     plt.yticks([])
     st.write(f"Mutations in: {selected_sample}")
-    st.pyplot(plt)
-    plt.close()
-
+    st.write(f"Country: {selected_country}")
+    st.write(f"Lineage: {selected_lineage}")
+    st.write(f"Type of resistance: {selected_drug}")
