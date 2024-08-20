@@ -1,6 +1,6 @@
 streamlit
 pandas
-geopandas
+geopandas==0.12.0
 matplotlib
 plotly
 pyvis
