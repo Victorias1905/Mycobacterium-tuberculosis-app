@@ -29,8 +29,9 @@ def download_file_from_google_drive(url, destination):
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
-gff_file='https://drive.google.com/uc?export=download&id=1MWmwHqhv9QBGvRPwFhgU1JFVuxqmQX7w'
-download_file_from_google_drive(gff_file, 'gff_file.gff')
+url='https://drive.google.com/uc?export=download&id=1MWmwHqhv9QBGvRPwFhgU1JFVuxqmQX7w'
+
+
 @st.cache_data
 def load_dataset_1():
     dataset=download_file_from_google_drive(URL_DATASET_1, 'Acession-Numbers.xlsx')
@@ -46,6 +47,10 @@ def load_dataset_2():
 def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
+@st.cache_data
+def load_dataset_4():
+    download_file_from_google_drive(url, 'genomic.gff')
+    return Gff('genomic.gff')
 
 @st.cache_data
 def load_dataset_5():
@@ -62,7 +67,7 @@ country_origin = load_dataset_1()
 lineage_country = load_dataset_2()
 resistance_mutations = load_dataset_3()
 final_dict = load_dataset_5()
-
+genomic=load_dataset_4()
 def go_to_main():
     st.session_state['page'] = 'main'
 def go_to_resistance_mutations():
@@ -217,7 +222,7 @@ elif st.session_state['page'] == 'genome_data':
     Drug_dictionary=dict(zip(lineage_country['Name'], lineage_country['Drug']))
     country_dictionary=dict(zip(country_origin['Name'], country_origin['Country']))
 
-    gff = Gff(gff_file)
+    
 
     genome_length = 4411532
     drug_position = resistance_mutations.groupby('Drug')['Genomic position '].apply(list).to_dict()
@@ -229,7 +234,7 @@ elif st.session_state['page'] == 'genome_data':
         for drug, positions in drug_position.items():
             for pos in set(positions):
                 plt.axvline(x=pos, color='red', linewidth=5)
-        for i, feat in enumerate(gff.extract_features("gene")):
+        for i, feat in enumerate(genomic.extract_features("gene")):
             start = int(feat.location.start)
             end = int(feat.location.end)
             length = end - start
