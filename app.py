@@ -28,8 +28,8 @@ def download_file_from_google_drive(url, destination):
 url='https://github.com/Victorias1905/Mycobacterium-tuberculosis-app/blob/main/ne_110m_admin_0_countries.shp'
 
 download_file_from_google_drive(url, 'africa.shp')
-africa = gpd.read_file('africa.shp')
-os.remove(local_filename)
+
+
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
