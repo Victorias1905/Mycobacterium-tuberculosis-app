@@ -9,7 +9,6 @@ openpyxl
 requests
 google-cloud-storage
 st-files-connection
-gzip
 tempfile
 pickle
 
