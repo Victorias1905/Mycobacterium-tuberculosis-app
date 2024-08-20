@@ -11,4 +11,5 @@ google-cloud-storage
 st-files-connection
 tempfile
 pickle
-
+gdown
+gzip
