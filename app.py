@@ -26,8 +26,6 @@ def download_file_from_google_drive(url, destination):
     with open(destination, 'wb') as f:
         f.write(response.content)
 
-
-
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
@@ -157,7 +155,7 @@ if st.session_state['page'] == 'main':
         )
         st.plotly_chart(fig3, use_container_width=True)
 
-    world = gpd.read_file(gpd.datasets.get_path('world'))
+    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
     africa = world[(world['continent'] == 'Africa')]
     light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
