@@ -16,6 +16,10 @@ import pickle
 import gzip
 import gdown
 
+
+
+
+
 def download_file_from_google_drive(url, destination):
     response = requests.get(url)
     response.raise_for_status()
@@ -43,7 +47,7 @@ def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-@st.cache()
+@st.cache_data
 def load_dataset_5():
 
     file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
