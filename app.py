@@ -53,15 +53,35 @@ def load_dataset_4():
     return Gff('genomic.gff')
 
 @st.cache_data
+@st.cache(show_spinner=False)
 def load_dataset_5():
+    try:
+        # Google Drive file ID and download URL
+        file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
+        url = f"https://drive.google.com/uc?id={file_id}"
+        output = 'final_dict.pkl.gz'
+        
+        # Download the file from Google Drive
+        gdown.download(url, output, quiet=True)  # Set quiet=True to minimize output
+        
+        # Load the pickle file from the gzip archive
+        with gzip.open(output, 'rb') as f:
+            final_dict = pickle.load(f)
+        
+        return final_dict
+    
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        return None
 
-    file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
-    url = f"https://drive.google.com/uc?id={file_id}"
-    output = 'final_dict.pkl.gz'
-    gdown.download(url, output, quiet=False)
-    with gzip.open('final_dict.pkl.gz', 'rb') as f:
-        return pickle.load(f)
+# Example usage within the Streamlit app
+final_dict = load_dataset_5()
 
+if final_dict is not None:
+    st.write("Dataset loaded successfully!")
+    # Continue processing and displaying the data
+else:
+    st.write("Failed to load dataset.")
 
 country_origin = load_dataset_1()
 lineage_country = load_dataset_2()
