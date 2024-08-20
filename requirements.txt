@@ -10,3 +10,4 @@ requests
 google-cloud-storage
 st-files-connection
 gdown
+gzip
