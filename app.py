@@ -25,7 +25,8 @@ def download_file_from_google_drive(url, destination):
     response.raise_for_status()
     with open(destination, 'wb') as f:
         f.write(response.content)
-
+url='https://github.com/Victorias1905/Mycobacterium-tuberculosis-app/blob/main/ne_110m_admin_0_countries.shp'
+africa=gpd.read_file(url)
 URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0dy56aZU4Cizknm777D'
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
@@ -155,7 +156,7 @@ if st.session_state['page'] == 'main':
         )
         st.plotly_chart(fig3, use_container_width=True)
 
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    world = gpd.read_file(gpd.datasets.get_path('world'))
     africa = world[(world['continent'] == 'Africa')]
     light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
     fig, ax = plt.subplots(1, 1, figsize=(10, 10))
