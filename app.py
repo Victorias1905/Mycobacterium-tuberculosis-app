@@ -43,7 +43,7 @@ def load_dataset_3():
     download_file_from_google_drive(URL_DATASET_3, 'WHO-resistance-associated-mutations.xlsx')
     return pd.read_excel('WHO-resistance-associated-mutations.xlsx', header=1)
 
-@st.cache(show_spinner=False, suppress_st_warning=True)
+@st.cache()
 def load_dataset_5():
 
     file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
