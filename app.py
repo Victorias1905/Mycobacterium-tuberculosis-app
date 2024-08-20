@@ -14,7 +14,15 @@ import requests
 import tempfile
 import pickle
 import gzip
-import gdown
+
+import subprocess
+import sys
+
+try:
+    import gdown
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "gdown"])
+    import gdown
 
 
 
