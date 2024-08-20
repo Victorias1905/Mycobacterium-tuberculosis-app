@@ -229,21 +229,34 @@ elif st.session_state['page'] == 'genome_data':
     sample_ids = lineage_country['Name'].unique().tolist()
     selected_sample = st.selectbox("Select Sample ID", sample_ids)
 
-    def plot_original():
-        plt.figure(figsize=(50, 10))
-        for drug, positions in drug_position.items():
-            for pos in set(positions):
-                plt.axvline(x=pos, color='red', linewidth=5)
-        for i, feat in enumerate(genomic.extract_features("gene")):
-            start = int(feat.location.start)
-            end = int(feat.location.end)
-            length = end - start
-            plt.barh(1, length, left=start, color='green', height=1.5)
-        plt.xlim(0, genome_length)
-        plt.ylim(0.75, 1.25)
-        plt.yticks([])
-        st.pyplot(plt.gcf())
+    
 
+    @st.cache_data
+    def plot_original():
+      plt.figure(figsize=(50, 10))
+
+
+      for drug, positions in drug_position.items():
+          for pos in set(positions):
+              plt.axvline(x=pos, color='red', linewidth=5)
+
+
+      for i, feat in enumerate(genomic.extract_features("gene")):
+          start = int(feat.location.start)
+          end = int(feat.location.end)
+          length = end - start
+          plt.barh(1, length, left=start, color='green', height=1.5)
+
+
+      plt.xlim(0, genome_length)
+      plt.ylim(0.75, 1.25)
+      plt.yticks([])
+
+      st.pyplot(plt.gcf())
+      plt.close()
+
+    st.write("Places of resistance associated mutations")
+    plot_original()
 
     plt.figure(figsize=(50, 10))
 
@@ -256,6 +269,8 @@ elif st.session_state['page'] == 'genome_data':
     for pos in set(selected_positions):
         plt.axvline(x=int(pos), color='red')
 
+
+
     plt.xlim(0, genome_length)
     plt.ylim(0.75, 1.25)
 
@@ -264,3 +279,6 @@ elif st.session_state['page'] == 'genome_data':
     st.write(f"Country: {selected_country}")
     st.write(f"Lineage: {selected_lineage}")
     st.write(f"Type of resistance: {selected_drug}")
+
+    st.pyplot(plt)
+    plt.close()
