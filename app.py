@@ -15,10 +15,7 @@ import tempfile
 import pickle
 import gzip
 import gdown
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
-from google.oauth2 import service_account
-import io
+
 
 
 
@@ -59,71 +56,10 @@ def load_dataset_4():
 
 
 
-@st.cache(show_spinner=False)
-def load_dataset_5():
-    try:
-        SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-        SERVICE_ACCOUNT_FILE = 'path_to_your_service_account.json'
-        
-        credentials = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        
-        service = build('drive', 'v3', credentials=credentials)
-        
-        file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
-        request = service.files().get_media(fileId=file_id)
-        fh = io.BytesIO()
-        downloader = MediaIoBaseDownload(fh, request)
-        
-        done = False
-        while done is False:
-            status, done = downloader.next_chunk()
-            print(f"Download {int(status.progress() * 100)}.")
-        
-        # Save to file
-        with open('final_dict.pkl.gz', 'wb') as f:
-            f.write(fh.getvalue())
-        
-        # Load the pickle file from the gzip archive
-        with gzip.open('final_dict.pkl.gz', 'rb') as f:
-            final_dict = pickle.load(f)
-        
-        return final_dict
-    
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        return None
-
-# Example usage within the Streamlit app
-final_dict = load_dataset_5()
-
-if final_dict is not None:
-    st.write("Dataset loaded successfully!")
-    # Continue processing and displaying the data
-else:
-    st.write("Failed to load dataset.")
-
-# Example usage within the Streamlit app
-final_dict = load_dataset_5()
-
-if final_dict is not None:
-    st.write("Dataset loaded successfully!")
-    # Continue processing and displaying the data
-else:
-    st.write("Failed to load dataset.")
-# Example usage within the Streamlit app
-final_dict = load_dataset_5()
-
-if final_dict is not None:
-    st.write("Dataset loaded successfully!")
-    # Continue processing and displaying the data
-else:
-    st.write("Failed to load dataset.")
-
 country_origin = load_dataset_1()
 lineage_country = load_dataset_2()
 resistance_mutations = load_dataset_3()
-final_dict = load_dataset_5()
+
 genomic=load_dataset_4()
 def go_to_main():
     st.session_state['page'] = 'main'
@@ -273,69 +209,4 @@ elif st.session_state['page'] == 'resistance_mutations':
     net.show('drug_gene_network.html')
     st.components.v1.html(open('drug_gene_network.html', 'r').read(), height=750)
 
-elif st.session_state['page'] == 'genome_data':
-    st.subheader("Genome Data")
-    Lineage_dictionary=dict(zip(lineage_country['Name'], lineage_country['Lineage']))
-    Drug_dictionary=dict(zip(lineage_country['Name'], lineage_country['Drug']))
-    country_dictionary=dict(zip(country_origin['Name'], country_origin['Country']))
 
-    
-
-    genome_length = 4411532
-    drug_position = resistance_mutations.groupby('Drug')['Genomic position '].apply(list).to_dict()
-    sample_ids = lineage_country['Name'].unique().tolist()
-    selected_sample = st.selectbox("Select Sample ID", sample_ids)
-
-    
-
-    @st.cache_data
-    def plot_original():
-      plt.figure(figsize=(50, 10))
-
-
-      for drug, positions in drug_position.items():
-          for pos in set(positions):
-              plt.axvline(x=pos, color='red', linewidth=5)
-
-
-      for i, feat in enumerate(genomic.extract_features("gene")):
-          start = int(feat.location.start)
-          end = int(feat.location.end)
-          length = end - start
-          plt.barh(1, length, left=start, color='green', height=1.5)
-
-
-      plt.xlim(0, genome_length)
-      plt.ylim(0.75, 1.25)
-      plt.yticks([])
-
-      st.pyplot(plt.gcf())
-      plt.close()
-
-    st.write("Places of resistance associated mutations")
-    plot_original()
-
-    plt.figure(figsize=(50, 10))
-
-    selected_positions = final_dict.get(selected_sample, [])
-    selected_positions = selected_positions.replace('[','').replace(']','').split(',')
-    selected_positions = [int(pos.strip()) for pos in selected_positions if pos.strip().isdigit()]
-    selected_country=country_dictionary.get(selected_sample)
-    selected_lineage=Lineage_dictionary.get(selected_sample)
-    selected_drug=Drug_dictionary.get(selected_sample)
-    for pos in set(selected_positions):
-        plt.axvline(x=int(pos), color='red')
-
-
-
-    plt.xlim(0, genome_length)
-    plt.ylim(0.75, 1.25)
-
-    plt.yticks([])
-    st.write(f"Mutations in: {selected_sample}")
-    st.write(f"Country: {selected_country}")
-    st.write(f"Lineage: {selected_lineage}")
-    st.write(f"Type of resistance: {selected_drug}")
-
-    st.pyplot(plt)
-    plt.close()
