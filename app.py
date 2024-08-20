@@ -15,7 +15,10 @@ import tempfile
 import pickle
 import gzip
 import gdown
-
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
+from google.oauth2 import service_account
+import io
 
 
 
@@ -52,24 +55,37 @@ def load_dataset_4():
     download_file_from_google_drive(url, 'genomic.gff')
     return Gff('genomic.gff')
 
+
+
+
+
 @st.cache(show_spinner=False)
 def load_dataset_5():
     try:
+        SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+        SERVICE_ACCOUNT_FILE = 'path_to_your_service_account.json'
+        
+        credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        
+        service = build('drive', 'v3', credentials=credentials)
+        
         file_id = '1uA1qLiNrSVSvoVxtOxTB4F6gM5cMOg83'
-        url = f"https://drive.google.com/uc?export=download&id={file_id}"
-        output = 'final_dict.pkl.gz'
-
-        # Download the file
-        response = requests.get(url, stream=True)
-        if response.status_code == 200:
-            with open(output, 'wb') as f:
-                f.write(response.content)
-        else:
-            st.error("Failed to download the file from Google Drive.")
-            return None
-
+        request = service.files().get_media(fileId=file_id)
+        fh = io.BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            print(f"Download {int(status.progress() * 100)}.")
+        
+        # Save to file
+        with open('final_dict.pkl.gz', 'wb') as f:
+            f.write(fh.getvalue())
+        
         # Load the pickle file from the gzip archive
-        with gzip.open(output, 'rb') as f:
+        with gzip.open('final_dict.pkl.gz', 'rb') as f:
             final_dict = pickle.load(f)
         
         return final_dict
@@ -77,6 +93,15 @@ def load_dataset_5():
     except Exception as e:
         st.error(f"An error occurred: {e}")
         return None
+
+# Example usage within the Streamlit app
+final_dict = load_dataset_5()
+
+if final_dict is not None:
+    st.write("Dataset loaded successfully!")
+    # Continue processing and displaying the data
+else:
+    st.write("Failed to load dataset.")
 
 # Example usage within the Streamlit app
 final_dict = load_dataset_5()
