@@ -10,3 +10,5 @@ requests
 google-cloud-storage
 st-files-connection
 gdown
+import zipfile
+import os
