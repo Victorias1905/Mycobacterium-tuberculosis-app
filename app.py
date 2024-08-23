@@ -215,15 +215,13 @@ if st.session_state['page'] == 'main':
         plt.title('Number of Occurrences per Country in Africa', fontsize=15)
         return fig
 
-    # Cache the map data
     africa = load_africa_data()
 
-    # Use session state to store the plot
-    if 'africa_plot' not in st.session_state:
-        st.session_state['africa_plot'] = plot_africa_map(africa, country_counts)
+   
+    fig = plot_africa_map(africa, country_counts)
 
-    # Display the cached plot
-    st.pyplot(st.session_state['africa_plot'])
+    
+    st.pyplot(fig)
     plt.close()
 elif st.session_state['page'] == 'resistance_mutations':
     st.subheader("Resistance Mutations")
