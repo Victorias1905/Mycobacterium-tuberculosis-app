@@ -15,8 +15,8 @@ import tempfile
 import pickle
 import gzip
 import gdown
-
-
+import zipfile
+import os
 
 
 
@@ -30,7 +30,7 @@ URL_DATASET_1 = 'https://drive.google.com/uc?export=download&id=1fvFcosmNcIxqH0d
 URL_DATASET_2 = 'https://drive.google.com/uc?export=download&id=1HnFDhSOKwybtD7r9-IwHlwQ6tYHrVChv'
 URL_DATASET_3 = 'https://drive.google.com/uc?export=download&id=116E6HD17qkspBEyRZOGE-vRpEyKL0JFu'
 url='https://drive.google.com/uc?export=download&id=1MWmwHqhv9QBGvRPwFhgU1JFVuxqmQX7w'
-
+url_1 = "https://drive.google.com/uc?export=download&id=1OWyIwV6JD16CPrMcJ-0ma2kOlzHLCX_y"
 
 @st.cache_data
 def load_dataset_1():
@@ -61,6 +61,19 @@ def load_dataset_5():
     gdown.download(url, output, quiet=False)
     with gzip.open('final_dict.pkl.gz', 'rb') as f:
         return pickle.load(f)
+
+@st.cache_data
+def load_dataset_6():
+    
+    local_zip_filename = "map_files.zip"
+    response = requests.get(url_1)
+    with open(local_zip_filename, 'wb') as file:
+        file.write(response.content)
+    with zipfile.ZipFile(local_zip_filename, 'r') as zip_ref:
+        zip_ref.extractall("shapefiles")
+    shapefile_path = os.path.join("shapefiles", "ne_110m_admin_0_countries.shp")
+    map = gpd.read_file(shapefile_path)
+    return map
 
 
 country_origin = load_dataset_1()
@@ -160,22 +173,58 @@ if st.session_state['page'] == 'main':
         )
         st.plotly_chart(fig3, use_container_width=True)
 
-    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-    africa = world[(world['continent'] == 'Africa')]
-    light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
-    fig, ax = plt.subplots(1, 1, figsize=(10, 10))
-    africa.plot(ax=ax, cmap=light_cmap, edgecolor='black', linewidth=0.75)
+     
 
-    for idx, row in africa.iterrows():
-        country_name = row['name']
-        if country_name in country_counts:
-            centroid = row['geometry'].centroid
-            label = f"{country_name}\n{country_counts[country_name]}"
-            ax.text(centroid.x, centroid.y, label, horizontalalignment='center', fontsize=6, color='k', weight="bold")
+    @st.cache_data
+    def load_africa_data():
+        map = load_dataset_6()  # Replace this with your actual function to load the dataset
+        african_countries = [
+            'Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cabo Verde', 
+            'Cameroon', 'Central African Republic', 'Chad', 'Comoros', 'Democratic Republic of the Congo', 
+            'Djibouti', 'Egypt', 'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Ethiopia', 'Gabon', 
+            'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia', 
+            'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco', 'Mozambique', 
+            'Namibia', 'Niger', 'Nigeria', 'Republic of the Congo', 'Rwanda', 'São Tomé and Príncipe', 
+            'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan', 'Sudan', 
+            'Tanzania', 'Togo', 'Tunisia', 'Uganda', 'Zambia', 'Zimbabwe'
+        ]
+        africa = map[map['SOVEREIGNT'].isin(african_countries)]
+        return africa
 
-    plt.title('Number of Samples per Country in Africa')
-    st.pyplot(fig)
+    def plot_africa_map(africa, country_counts):
+        light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
 
+        fig, ax = plt.subplots(1, 1, figsize=(20, 20))
+        africa.plot(ax=ax, cmap=light_cmap, edgecolor='black', linewidth=1.5)
+
+        for idx, row in africa.iterrows():
+            country_name = row['SOVEREIGNT']  
+            if country_name in country_counts:
+                centroid = row['geometry'].centroid
+                label = f"{country_name}\n{country_counts[country_name]}"
+                ax.text(
+                    centroid.x,
+                    centroid.y,
+                    label,
+                    horizontalalignment='center',
+                    fontsize=12,
+                    color='k',
+                    weight='bold'
+                )
+
+        plt.title('Number of Occurrences per Country in Africa', fontsize=15)
+        return fig
+
+    # Cache the map data
+    africa = load_africa_data()
+
+    # Use session state to store the plot
+    if 'africa_plot' not in st.session_state:
+        st.session_state['africa_plot'] = plot_africa_map(africa, country_counts)
+
+    # Display the cached plot
+    st.pyplot(st.session_state['africa_plot'])
+    plt.close()
 elif st.session_state['page'] == 'resistance_mutations':
     st.subheader("Resistance Mutations")
     drug_mapping = {
@@ -222,14 +271,14 @@ elif st.session_state['page'] == 'genome_data':
     Drug_dictionary=dict(zip(lineage_country['Name'], lineage_country['Drug']))
     country_dictionary=dict(zip(country_origin['Name'], country_origin['Country']))
 
-    
+
 
     genome_length = 4411532
     drug_position = resistance_mutations.groupby('Drug')['Genomic position '].apply(list).to_dict()
     sample_ids = lineage_country['Name'].unique().tolist()
     selected_sample = st.selectbox("Select Sample ID", sample_ids)
 
-    
+
 
     @st.cache_data
     def plot_original():
