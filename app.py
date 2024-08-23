@@ -86,25 +86,84 @@ def go_to_main():
 def go_to_resistance_mutations():
     st.session_state['page'] = 'resistance_mutations'
 def go_to_genome_data():
-    st.session_state['page'] = 'genome_data'
+    st.session_state['page'] = 'genome_data'   
+def go_to_Countries():
+    st.session_state['page'] = 'Countries'
 
 if 'page' not in st.session_state:
     st.session_state['page'] = 'main'
+if st.button('Back', key='back'):
+  st.session_state['page'] = 'main'
 
 col1, col2, col3 = st.columns(3)
 with col1:
+    if st.button('Countries',key="countries"):
+        go_to_Countries()
+with col2:
     if st.button('Genome Data', key='genome'):
         go_to_genome_data()
-with col2:
+with col3:
     if st.button('Resistance Mutations', key='resistance'):
         go_to_resistance_mutations()
-with col3:
-    if st.button('Back'):
-        st.session_state['page'] = 'main'
+
+  
+
 
 if st.session_state['page'] == 'main':
     st.title("Mycobacterium tuberculosis - Africa")
     country_counts = country_origin['Country'].value_counts()
+    @st.cache_data
+    def load_africa_data():
+        map = load_dataset_6()  
+        african_countries = [
+            'Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cabo Verde', 
+            'Cameroon', 'Central African Republic', 'Chad', 'Comoros', 'Democratic Republic of the Congo', 
+            'Djibouti', 'Egypt', 'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Ethiopia', 'Gabon', 
+            'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia', 
+            'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco', 'Mozambique', 
+            'Namibia', 'Niger', 'Nigeria', 'Republic of the Congo', 'Rwanda', 'São Tomé and Príncipe', 
+            'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan', 'Sudan', 
+            'Tanzania', 'Togo', 'Tunisia', 'Uganda', 'Zambia', 'Zimbabwe'
+        ]
+        africa = map[map['SOVEREIGNT'].isin(african_countries)]
+        return africa
+
+    def plot_africa_map(africa, country_counts):
+        light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
+
+        fig, ax = plt.subplots(1, 1, figsize=(20, 20))
+        africa.plot(ax=ax, cmap=light_cmap, edgecolor='black', linewidth=1.5)
+
+        for idx, row in africa.iterrows():
+            country_name = row['SOVEREIGNT']  
+            if country_name in country_counts:
+                centroid = row['geometry'].centroid
+                label = f"{country_name}\n{country_counts[country_name]}"
+                ax.text(
+                    centroid.x,
+                    centroid.y,
+                    label,
+                    horizontalalignment='center',
+                    fontsize=12,
+                    color='k',
+                    weight='bold'
+                )
+
+        plt.title('Number of Occurrences per Country in Africa', fontsize=15)
+        return fig
+
+   
+    africa = load_africa_data()
+
+   
+    fig = plot_africa_map(africa, country_counts)
+
+    
+    st.pyplot(fig)
+    plt.close()
+
+elif st.session_state['page'] == 'Countries':
+    st.subheader("Resistance Mutations")
     filtered_lineage_country = lineage_country.dropna(subset=['Lineage'])
     filtered_lineage_country = filtered_lineage_country[filtered_lineage_country['Lineage'] != '-']
     country_ids = lineage_country['Country'].unique().tolist()
@@ -172,57 +231,8 @@ if st.session_state['page'] == 'main':
             width=250
         )
         st.plotly_chart(fig3, use_container_width=True)
+ 
 
-     
-
-    @st.cache_data
-    def load_africa_data():
-        map = load_dataset_6()  # Replace this with your actual function to load the dataset
-        african_countries = [
-            'Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi', 'Cabo Verde', 
-            'Cameroon', 'Central African Republic', 'Chad', 'Comoros', 'Democratic Republic of the Congo', 
-            'Djibouti', 'Egypt', 'Equatorial Guinea', 'Eritrea', 'Eswatini', 'Ethiopia', 'Gabon', 
-            'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau', 'Ivory Coast', 'Kenya', 'Lesotho', 'Liberia', 
-            'Libya', 'Madagascar', 'Malawi', 'Mali', 'Mauritania', 'Mauritius', 'Morocco', 'Mozambique', 
-            'Namibia', 'Niger', 'Nigeria', 'Republic of the Congo', 'Rwanda', 'São Tomé and Príncipe', 
-            'Senegal', 'Seychelles', 'Sierra Leone', 'Somalia', 'South Africa', 'South Sudan', 'Sudan', 
-            'Tanzania', 'Togo', 'Tunisia', 'Uganda', 'Zambia', 'Zimbabwe'
-        ]
-        africa = map[map['SOVEREIGNT'].isin(african_countries)]
-        return africa
-
-    def plot_africa_map(africa, country_counts):
-        light_cmap = colors.ListedColormap(['#ffcccb', '#ffe4b5', '#fafad2', '#d3ffce', '#add8e6', '#e6e6fa'])
-
-        fig, ax = plt.subplots(1, 1, figsize=(20, 20))
-        africa.plot(ax=ax, cmap=light_cmap, edgecolor='black', linewidth=1.5)
-
-        for idx, row in africa.iterrows():
-            country_name = row['SOVEREIGNT']  
-            if country_name in country_counts:
-                centroid = row['geometry'].centroid
-                label = f"{country_name}\n{country_counts[country_name]}"
-                ax.text(
-                    centroid.x,
-                    centroid.y,
-                    label,
-                    horizontalalignment='center',
-                    fontsize=12,
-                    color='k',
-                    weight='bold'
-                )
-
-        plt.title('Number of Occurrences per Country in Africa', fontsize=15)
-        return fig
-
-    africa = load_africa_data()
-
-   
-    fig = plot_africa_map(africa, country_counts)
-
-    
-    st.pyplot(fig)
-    plt.close()
 elif st.session_state['page'] == 'resistance_mutations':
     st.subheader("Resistance Mutations")
     drug_mapping = {
@@ -262,6 +272,7 @@ elif st.session_state['page'] == 'resistance_mutations':
 
     net.show('drug_gene_network.html')
     st.components.v1.html(open('drug_gene_network.html', 'r').read(), height=750)
+ 
 
 elif st.session_state['page'] == 'genome_data':
     st.subheader("Genome Data")
@@ -329,3 +340,5 @@ elif st.session_state['page'] == 'genome_data':
 
     st.pyplot(plt)
     plt.close()
+    
+   
