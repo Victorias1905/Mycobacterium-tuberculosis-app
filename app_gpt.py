@@ -7,7 +7,7 @@ api_key = st.secrets["general"]["OPENAI_API_KEY"]
 def get_response(prompt):
     client = openai.OpenAI(api_key=api_key)
     response = client.chat.completions.create(
-    model="ft:gpt-4o-mini-2024-07-18:mtbc-project::A2Vkwrhe",  
+    model="ft:gpt-4o-mini-2024-07-18:mtbc-project::AQhs3HpR",  
     messages=[{"role": "user", "content": prompt}])
     return response.choices[0].message.content.strip()
 
