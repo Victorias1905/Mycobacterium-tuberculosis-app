@@ -1,6 +1,6 @@
 import openai
 import streamlit as st
-
+st.set_page_config(layout="wide")
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 
