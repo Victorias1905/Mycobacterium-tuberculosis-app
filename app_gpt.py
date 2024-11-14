@@ -15,7 +15,7 @@ def get_response(prompt, model):
 col1, col2 = st.columns(2)
 
 with col1:
-    st.header("Model 1: Without references")
+    st.markdown("###Model 1: Without references")
     
     if 'chat_history_model1' not in st.session_state:
         st.session_state.chat_history_model1 = []
