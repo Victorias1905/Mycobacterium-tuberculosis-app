@@ -164,7 +164,7 @@ if uploaded_files:
         except Exception as e:
             print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
 
-print("All fine-tuning jobs processed.")
-job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-model_name=job_response.fine_tuned_model
-save_latest_model(model_name)
+    print("All fine-tuning jobs processed.")
+    job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+    model_name=job_response.fine_tuned_model
+    save_latest_model(model_name)
