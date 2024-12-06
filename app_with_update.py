@@ -131,38 +131,38 @@ if uploaded_files:
     st.success("Files processed successfully!")
 
 
-response = client.files.create(
-file=open("json_output_file", 'rb'),
-purpose='fine-tune'
-)
-file_id = response.id
-training_files = []
-training_files.append(file_id)
-for training_file_id in training_files:
-    try:
-        fine_tune_response = client.fine_tuning.jobs.create(
-            model=model_name,  
-            training_file=training_file_id,
-            hyperparameters={"n_epochs":3, 
-                             "learning_rate_multiplier":1,
-                            "batch_size":1
-            }
-        )
-        
-       
-        fine_tune_job_id = fine_tune_response.id
-        while True:
-            job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-            job_status = job_response.status
+    response = client.files.create(
+    file=open("json_output_file", 'rb'),
+    purpose='fine-tune'
+    )
+    file_id = response.id
+    training_files = []
+    training_files.append(file_id)
+    for training_file_id in training_files:
+        try:
+            fine_tune_response = client.fine_tuning.jobs.create(
+                model=model_name,  
+                training_file=training_file_id,
+                hyperparameters={"n_epochs":3, 
+                                 "learning_rate_multiplier":1,
+                                "batch_size":1
+                }
+            )
             
-            if job_status in ["succeeded", "failed"]:
-                print(f"Job {fine_tune_job_id} completed with status: {job_status}")
-                break
-            
-            print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
-         
-    except Exception as e:
-        print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
+           
+            fine_tune_job_id = fine_tune_response.id
+            while True:
+                job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+                job_status = job_response.status
+                
+                if job_status in ["succeeded", "failed"]:
+                    print(f"Job {fine_tune_job_id} completed with status: {job_status}")
+                    break
+                
+                print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
+             
+        except Exception as e:
+            print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
 
 print("All fine-tuning jobs processed.")
 job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
