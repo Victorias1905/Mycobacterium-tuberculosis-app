@@ -139,32 +139,26 @@ if uploaded_files:
     training_files = []
     training_files.append(file_id)
     for training_file_id in training_files:
-        try:
-            fine_tune_response = client.fine_tuning.jobs.create(
-                model=model_name,  
-                training_file=training_file_id,
-                hyperparameters={"n_epochs":3, 
-                                 "learning_rate_multiplier":1,
-                                "batch_size":1
-                }
-            )
+ 
+        fine_tune_response = client.fine_tuning.jobs.create(
+            model=model_name,  
+            training_file=training_file_id,
+            hyperparameters={"n_epochs":3, 
+                             "learning_rate_multiplier":1,
+                            "batch_size":1
+            }
+        )
+        fine_tune_job_id = fine_tune_response.id
+        while True:
+            job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+            job_status = job_response.status
             
-           
-            fine_tune_job_id = fine_tune_response.id
-            while True:
-                job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-                job_status = job_response.status
-                
-                if job_status in ["succeeded", "failed"]:
-                    print(f"Job {fine_tune_job_id} completed with status: {job_status}")
-                    break
-                
-                print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
+            if job_status in ["succeeded", "failed"]:
+                print(f"Job {fine_tune_job_id} completed with status: {job_status}")
+                break
+            
+            print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
              
-        except Exception as e:
-            print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
-
     print("All fine-tuning jobs processed.")
-    job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
     model_name=job_response.fine_tuned_model
     save_latest_model(model_name)
