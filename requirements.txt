@@ -11,3 +11,8 @@ google-cloud-storage
 st-files-connection
 gdown
 openai
+tiktoken
+os
+unicodedata
+pdfminer.six
+httpx==0.27.2
