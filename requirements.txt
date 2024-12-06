@@ -10,9 +10,8 @@ requests
 google-cloud-storage
 st-files-connection
 gdown
-openai
+openai==1.56.1
 tiktoken
-os
 unicodedata
 pdfminer.six
 httpx==0.27.2
