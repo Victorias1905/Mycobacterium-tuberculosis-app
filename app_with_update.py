@@ -149,15 +149,10 @@ if uploaded_files:
             }
         )
         fine_tune_job_id = fine_tune_response.id
-        while True:
-            job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-            job_status = job_response.status
+        job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+       
             
-            if job_status in ["succeeded", "failed"]:
-                print(f"Job {fine_tune_job_id} completed with status: {job_status}")
-                break
             
-            print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
              
     print("All fine-tuning jobs processed.")
     model_name=job_response.fine_tuned_model
