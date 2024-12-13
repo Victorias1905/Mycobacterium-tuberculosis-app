@@ -1,3 +1,13 @@
+import openai
+import streamlit as st
+import json
+from pdfminer.high_level import extract_text
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import unicodedata
+import tiktoken
+import os
+import subprocess
+
 def push_to_git_debug(model_name):
     try:
         repo_path = os.path.abspath(".")
@@ -44,8 +54,7 @@ def push_to_git_debug(model_name):
     except Exception as e:
         st.error(f"Unexpected error: {e}")
 
-# Streamlit interface
-st.title("Git Push Debug Tool")
+
 
 # User inputs the model name
 model_name = st.text_input("Enter model name:")
