@@ -97,8 +97,8 @@ def pdf_preprocessing(article, outfile):
             header_tokens = len(encoding.encode(header))
 
             # Create chunks based on token limits
-            if number_of_tokens + header_tokens >= 4000:
-                max_tokens_per_chunk = 4000 - header_tokens
+            if number_of_tokens + header_tokens >= 50000:
+                max_tokens_per_chunk = 50000 - header_tokens
                 chunks = [tokens[i:i + max_tokens_per_chunk] for i in range(0, len(tokens), max_tokens_per_chunk)]
             else:
                 chunks = [tokens]
@@ -144,7 +144,7 @@ if process_button:
     fine_tune_response = client.fine_tuning.jobs.create(
         model=model_name,  
         training_file=file_id,
-        hyperparameters={"n_epochs":1, 
+        hyperparameters={"n_epochs":3, 
                          "learning_rate_multiplier":1,
                         "batch_size":1} )
     fine_tune_job_id = fine_tune_response.id
