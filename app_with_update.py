@@ -160,14 +160,18 @@ if process_button:
                 save_latest_model(model_name)
             break
        
+     
 def push_to_github():
     try:
-        # Replace <your-token> with your actual PAT
-        token = "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"
-        remote_url = f"https://{token}@github.com/Victorias1905/Mycobacterium-tuberculosis-app.git"
+        # Set up the SSH key directly from the provided key
+        ssh_key = "SHA256:k/6FFc+vZLVgpFPo9LoREVM+JrYAgPfHrHOnwGqT+J4"
 
-        # Set the remote URL with the token
-        subprocess.run(["git", "remote", "set-url", "origin", remote_url], check=True)
+        # Add the key to the SSH agent
+        subprocess.run(["ssh-agent", "-s"], check=True)
+        subprocess.run(["ssh-add", "-"], input=ssh_key.encode(), check=True)
+
+        # Configure Git to use SSH for pushing
+        subprocess.run(["git", "config", "--global", "url.ssh://git@github.com/.insteadOf", "https://github.com/"], check=True)
 
         # Add all changes
         subprocess.run(["git", "add", "."], check=True)
@@ -176,16 +180,15 @@ def push_to_github():
         subprocess.run(["git", "commit", "-m", "Update GPT-MTBC app code"], check=True)
 
         # Push changes
-        subprocess.run(["git", "push", "--force"], check=True)
+        subprocess.run(["git", "push"], check=True)
 
         st.success("Code successfully pushed to GitHub!")
     except subprocess.CalledProcessError as e:
         st.error(f"Error pushing to GitHub: {e}")
-
+    except Exception as ex:
+        st.error(f"Unexpected error: {ex}")
 
 if st.button("Push to GitHub"):
-    push_to_github()         
-   
-      
+    push_to_github()   
    
    
