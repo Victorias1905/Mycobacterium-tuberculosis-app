@@ -159,27 +159,41 @@ if process_button:
             if model_name:
                 save_latest_model(model_name)
             break
-       
-     
+
+
 def push_to_github():
     try:
-        # Set up the SSH key directly from the provided key
-        ssh_key = "SHA256:k/6FFc+vZLVgpFPo9LoREVM+JrYAgPfHrHOnwGqT+J4"
+        # Replace the key below with your actual private key
+        # Make sure the formatting (including newline characters) is exactly correct.
+        ssh_key = """-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+QyNTUxOQAAACAbapl4T8KNbM43QLAjskP7GXm6my7ZeHi7FotYATqaDwAAALjE6ArVxOgK
+1QAAAAtzc2gtZWQyNTUxOQAAACAbapl4T8KNbM43QLAjskP7GXm6my7ZeHi7FotYATqaDw
+AAAECrUjI0PBMQBTPNMVp2XNK/xql1Soj/HQN9h8ZmnIwpyxtqmXhPwo1szjdAsCOyQ/sZ
+ebqbLtl4eLsWi1gBOpoPAAAAMDEwMjgwNTE5NytWaWN0b3JpYXMxOTA1QHVzZXJzLm5vcm
+VwbHkuZ2l0aHViLmNvbQECAwQF
+-----END OPENSSH PRIVATE KEY-----
+"""
 
-        # Add the key to the SSH agent
-        subprocess.run(["ssh-agent", "-s"], check=True)
-        subprocess.run(["ssh-add", "-"], input=ssh_key.encode(), check=True)
+        # Start the ssh-agent and parse its output
+        agent_output = subprocess.check_output(["ssh-agent", "-s"], text=True)
+        for line in agent_output.split("\n"):
+            if "SSH_AUTH_SOCK" in line:
+                sock = line.split(";", 1)[0].split("=")[1]
+                os.environ["SSH_AUTH_SOCK"] = sock
+            elif "SSH_AGENT_PID" in line:
+                pid = line.split(";", 1)[0].split("=")[1]
+                os.environ["SSH_AGENT_PID"] = pid
 
-        # Configure Git to use SSH for pushing
+        # Add the private key to the agent
+        subprocess.run(["ssh-add", "-"], input=ssh_key.encode("utf-8"), check=True)
+
+        # Configure Git to use SSH for GitHub
         subprocess.run(["git", "config", "--global", "url.ssh://git@github.com/.insteadOf", "https://github.com/"], check=True)
 
-        # Add all changes
+        # Add, commit, and push changes
         subprocess.run(["git", "add", "."], check=True)
-
-        # Commit changes
         subprocess.run(["git", "commit", "-m", "Update GPT-MTBC app code"], check=True)
-
-        # Push changes
         subprocess.run(["git", "push"], check=True)
 
         st.success("Code successfully pushed to GitHub!")
@@ -189,6 +203,7 @@ def push_to_github():
         st.error(f"Unexpected error: {ex}")
 
 if st.button("Push to GitHub"):
-    push_to_github()   
-   
+    push_to_github()
+     
+
    
