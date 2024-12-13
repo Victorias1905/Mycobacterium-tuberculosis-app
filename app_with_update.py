@@ -192,6 +192,9 @@ def push_to_git():
         st.error(f"Git command failed: {e.stderr or 'Unknown error'}")
     except Exception as e:
         st.error(f"Unexpected error: {e}")
+    st.write(f"Token: {token[:4]}***")  # Only show the first few characters for security
+    st.write(f"Remote URL: {auth_remote}")
+
 
 # Streamlit button to trigger the function
 if st.button("Push to GitHub"):
