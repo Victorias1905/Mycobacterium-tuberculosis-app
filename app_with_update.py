@@ -176,7 +176,7 @@ def push_to_git():
         subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], cwd=repo_path, check=True, capture_output=True, text=True)
         
         # Set GitHub remote URL
-        token = st.secrets["general"]["GITHUB_TOKEN"]
+        token = st.secrets.get("general", {}).get("GITHUB_TOKEN", None)
         username = "Victorias1905"
         repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/{username}/{repo_name}.git"
@@ -195,7 +195,7 @@ def push_to_git():
     st.write(f"Token: {token[:4]}***")  # Only show the first few characters for security
     st.write(f"Remote URL: {auth_remote}")
     st.write(f"Token from secrets: {st.secrets['general']['GITHUB_TOKEN'][:4]}***")
-
+    
 
 # Streamlit button to trigger the function
 if st.button("Push to GitHub"):
