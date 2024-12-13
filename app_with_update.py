@@ -117,14 +117,17 @@ def pdf_preprocessing(article, outfile):
 # Streamlit app
 st.title("Model update - upload at least ten articles")
 uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
+preprocess_button=st.button("Preprocess", key="Preprocess")
 process_button = st.button('Update', key='Update')
-# Process each uploaded file
-if uploaded_files:
-    with open("json_output_file", 'w', encoding='utf-8') as outfile:
-        for article in uploaded_files:
-            pdf_preprocessing(article, outfile)
 
-    st.success("Files processed successfully!")
+# Process each uploaded file
+if preprocess_button:
+    if uploaded_files:
+        with open("json_output_file", 'w', encoding='utf-8') as outfile:
+            for article in uploaded_files:
+                pdf_preprocessing(article, outfile)
+    
+        st.success("Files processed successfully!")
 
 if process_button:
     response = client.files.create(
