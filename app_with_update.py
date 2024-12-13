@@ -160,11 +160,8 @@ if process_button:
 
 
 
-new_model_name = st.text_input("Enter new model name:", "new-model-name")
-if st.button("Update and Push"):
-    update_model_name(new_model_name)
-def push_to_git(new_model_name):
-    # Update the model name in the JSON file
+def push_to_git():
+
     with open("latest_model.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -182,8 +179,8 @@ def push_to_git(new_model_name):
     subprocess.run(["git", "commit", "-m", f"Update model name to {new_model_name}"], check=True)
 
     # Use a PAT for authentication over HTTPS
-    # Replace the token below with a secure retrieval method, e.g., st.secrets["general"]["GITHUB_TOKEN"]
-    token = "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" 
+    token=st.secrets["general"]["GITHUB_TOKEN"]
+    
     repo_name = "Mycobacterium-tuberculosis-app"
     auth_remote = f"https://{token}:x-oauth-basic@github.com/Victorias1905/{repo_name}.git"
 
@@ -195,8 +192,8 @@ def push_to_git(new_model_name):
 
     st.success("Model name successfully updated and changes pushed to GitHub!")
 
-st.title("Update Model Name and Push to GitHub")
-new_model_name = st.text_input("Enter new model name:", "new-model-name")
-if st.button("Update and Push"):
-    push_to_git(new_model_name)
+
+
+if st.button("Push to GitHub"):
+    push_to_git()
    
