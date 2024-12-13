@@ -13,8 +13,14 @@ api_key = st.secrets["general"]["OPENAI_API_KEY"]
 with open("latest_model.json", "r") as file:
     model_name = json.load(file).get("model_name")
 def save_latest_model(model_name):
-    with open("latest_model.json", "w") as file:
-        json.dump({"model_name": model_name}, file)
+    try:
+        # Get the absolute path of the JSON file
+        file_path = os.path.abspath("latest_model.json")
+        with open(file_path, "w", encoding="utf-8") as file:
+            json.dump({"model_name": model_name}, file)
+        st.success(f"Model name successfully saved to {file_path}")
+    except Exception as e:
+        st.error(f"Failed to save the model name. Error: {e}")
 
 client = openai.OpenAI(api_key=api_key)
 def get_response(prompt):
@@ -149,9 +155,6 @@ if process_button:
             model_name = job_response.fine_tuned_model
             if model_name:
                 save_latest_model(model_name)
-                st.success(f"New model saved: {model_name}")
-            else:
-                st.error("Fine-tuning succeeded, but model name was not retrieved.")
             break
        
            
