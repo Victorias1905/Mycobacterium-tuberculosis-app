@@ -163,8 +163,8 @@ if process_button:
 def push_to_github():
     try:
         # Replace <your-token> with your actual PAT
-        token = "<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>"
-        remote_url = f"https://{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}@github.com/Victorias1905/Mycobacterium-tuberculosis-app.git"
+        token = "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"
+        remote_url = f"https://{token}@github.com/Victorias1905/Mycobacterium-tuberculosis-app.git"
 
         # Set the remote URL with the token
         subprocess.run(["git", "remote", "set-url", "origin", remote_url], check=True)
