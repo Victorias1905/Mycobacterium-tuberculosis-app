@@ -169,7 +169,7 @@ def push_to_git():
 
     # Stage and commit changes
     subprocess.run(["git", "add", "latest_model.json"], check=True)
-    subprocess.run(["git", "commit", "-m", f"Update model name to {new_model_name}"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], check=True)
 
     # Use a PAT for authentication over HTTPS
     token=st.secrets["general"]["GITHUB_TOKEN"]
