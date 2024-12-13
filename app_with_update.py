@@ -164,46 +164,37 @@ def push_to_git():
     try:
         # Ensure the Git repository is initialized
         subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check=True, capture_output=True, text=True)
-    except subprocess.CalledProcessError:
-        st.error("This directory is not a Git repository. Please initialize it with 'git init' first.")
-        return
 
-    try:
         # Configure Git user
         subprocess.run(["git", "config", "user.name", "Victorias1905"], check=True)
         subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], check=True)
 
-        # Stage and commit changes
-        if not os.path.exists("latest_model.json"):
-            st.error("File 'latest_model.json' not found. Make sure to save the model name first.")
-            return
+        # Add all changes, respecting .gitignore
+        subprocess.run(["git", "add", "."], check=True)
 
-        subprocess.run(["git", "add", "latest_model.json"], check=True)
-
+        # Commit changes
         try:
             subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], check=True)
         except subprocess.CalledProcessError as e:
             if "nothing to commit" in str(e.stderr):
-                st.warning("No changes to commit. The file is already up-to-date.")
+                st.warning("No changes to commit. The repository is up-to-date.")
                 return
             else:
                 raise
 
-        # Use a PAT for authentication
+        # Push changes to GitHub
         token = st.secrets["general"]["GITHUB_TOKEN"]
         repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/Victorias1905/{repo_name}.git"
-
-        # Update remote URL
         subprocess.run(["git", "remote", "set-url", "origin", auth_remote], check=True)
+        subprocess.run(["git", "push", "origin", "main"], check=True)
 
-        # Push changes to the main branch
-        result = subprocess.run(["git", "push", "origin", "main"], check=True, capture_output=True, text=True)
-        st.success("Model name successfully updated and changes pushed to GitHub!")
+        st.success("Changes successfully pushed to GitHub!")
     except subprocess.CalledProcessError as e:
-        st.error(f"Git command failed:\n{e.stderr}")
+        st.error(f"Git command failed:\nstdout: {e.stdout}\nstderr: {e.stderr}")
     except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
+        st.error(f"Unexpected error occurred: {e}")
+
 
 if st.button("Push to GitHub"):
     push_to_git()  
