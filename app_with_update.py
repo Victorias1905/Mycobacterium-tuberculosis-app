@@ -9,7 +9,6 @@ import tiktoken
 import os
 
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
-model_name="latest_model.json"
 LATEST_MODEL_FILE = "latest_model.json"
 with open(LATEST_MODEL_FILE, "r") as file:
     model_name = json.load(file).get("model_name")
@@ -135,27 +134,23 @@ if process_button:
     purpose='fine-tune'
     )
     file_id = response.id
-    
-    try:
-        fine_tune_response = client.fine_tuning.jobs.create(
-            model=model_name,  
-            training_file=file_id,
-            hyperparameters={"n_epochs":2, 
-                             "learning_rate_multiplier":1,
-                            "batch_size":1} )
-        fine_tune_job_id = fine_tune_response.id
-        job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-        job_status = job_response.status
-        if job_status == "succeeded":
-            model_name = job_response.get("fine_tuned_model")
-            if model_name:
-                save_latest_model(model_name)
-                st.success(f"New model saved: {model_name}")
-            else:
-                st.error("Fine-tuning succeeded, but model name was not retrieved.")
-    except Exception as e:
-        print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
-        job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+    fine_tune_response = client.fine_tuning.jobs.create(
+        model=model_name,  
+        training_file=file_id,
+        hyperparameters={"n_epochs":2, 
+                         "learning_rate_multiplier":1,
+                        "batch_size":1} )
+    fine_tune_job_id = fine_tune_response.id
+    job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+    job_status = job_response.status
+    if job_status == "succeeded":
+        model_name = job_response.get("fine_tuned_model")
+        if model_name:
+            save_latest_model(model_name)
+            st.success(f"New model saved: {model_name}")
+        else:
+            st.error("Fine-tuning succeeded, but model name was not retrieved.")
+   
        
                       
     print("All fine-tuning jobs processed.")
