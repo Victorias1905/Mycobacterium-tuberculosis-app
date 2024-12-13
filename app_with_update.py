@@ -144,7 +144,7 @@ if process_button:
     fine_tune_response = client.fine_tuning.jobs.create(
         model=model_name,  
         training_file=file_id,
-        hyperparameters={"n_epochs":2, 
+        hyperparameters={"n_epochs":1, 
                          "learning_rate_multiplier":1,
                         "batch_size":1} )
     fine_tune_job_id = fine_tune_response.id
