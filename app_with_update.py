@@ -8,8 +8,8 @@ import unicodedata
 import tiktoken
 import os
 import subprocess
-subprocess.run(['git', 'config', '--global', 'user.name', 'Victoria Strahova'])
-subprocess.run(['git', 'config', '--global', 'user.email', "victoria.strahova@student.uhasselt.be"])
+subprocess.run(['git', 'config', '--global', 'user.name', 'Victorias1905'])
+subprocess.run(['git', 'config', '--global', 'user.email', "102805197+Victorias1905@users.noreply.github.com"])
 
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
