@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import unicodedata
 import tiktoken
 import os
-
+import subprocess
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 with open("latest_model.json", "r") as file:
