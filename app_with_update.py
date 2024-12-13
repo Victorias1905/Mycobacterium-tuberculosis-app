@@ -17,10 +17,6 @@ def save_latest_model(model_name):
     with open(LATEST_MODEL_FILE, "w") as file:
         json.dump({"model_name": model_name}, file)
 
-def save_latest_model(model_name):
-    with open(LATEST_MODEL_FILE, "w") as file:
-        json.dump({"model_name": model_name}, file)
-
 client = openai.OpenAI(api_key=api_key)
 def get_response(prompt):
     response = client.chat.completions.create(
@@ -150,16 +146,19 @@ if process_button:
             while True:
                 job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
                 job_status = job_response.status
-                
                 if job_status in ["succeeded", "failed"]:
-                    print(f"Job {fine_tune_job_id} completed with status: {job_status}")
                     break
-            print(f"Waiting for job {fine_tune_job_id} to complete. Current status: {job_status}")
+            if job_status == "succeeded":
+                model_name = job_response.get("fine_tuned_model")
+                if model_name:
+                    save_latest_model(model_name)
+                    st.success(f"New model saved: {model_name}")
+                else:
+                    st.error("Fine-tuning succeeded, but model name was not retrieved.")
         except Exception as e:
             print(f"Error during fine-tuning job creation or execution for file {training_file_id}: {e}")
             job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
        
                       
     print("All fine-tuning jobs processed.")
-    model_name=job_response.fine_tuned_model
-    save_latest_model(model_name)
+   
