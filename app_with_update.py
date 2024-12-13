@@ -120,7 +120,7 @@ uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multi
 process_button = st.button('Update', key='Update')
 # Process each uploaded file
 if uploaded_files:
-    with open("json_output_file", 'a', encoding='utf-8') as outfile:
+    with open("json_output_file", 'w', encoding='utf-8') as outfile:
         for article in uploaded_files:
             pdf_preprocessing(article, outfile)
 
