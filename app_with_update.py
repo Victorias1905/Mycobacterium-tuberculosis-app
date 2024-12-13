@@ -163,7 +163,7 @@ if process_button:
 def push_to_github():
     try:
         # Replace <your-token> with your actual PAT
-        token = "<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>"
+        token = "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"
         remote_url = f"https://{token}@github.com/Victorias1905/Mycobacterium-tuberculosis-app.git"
 
         # Set the remote URL with the token
