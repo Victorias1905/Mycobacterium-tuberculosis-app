@@ -162,42 +162,42 @@ if process_button:
 
 def push_to_git():
     try:
-        # Ensure the Git repository is initialized
-        subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check=True, capture_output=True, text=True)
+        # Ensure the current working directory is within a Git repo
+        repo_path = os.path.abspath(".")
+        subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], cwd=repo_path, check=True, capture_output=True, text=True)
 
         # Configure Git user
-        subprocess.run(["git", "config", "user.name", "Victorias1905"], check=True)
-        subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], check=True)
+        subprocess.run(["git", "config", "user.name", "Victorias1905"], cwd=repo_path, check=True)
+        subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], cwd=repo_path, check=True)
 
         # Add and commit changes
-        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "add", "."], cwd=repo_path, check=True)
         try:
-            subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], check=True)
+            subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], cwd=repo_path, check=True)
         except subprocess.CalledProcessError as e:
-            if "nothing to commit" in str(e.stderr):
+            if "nothing to commit" in e.stderr.decode("utf-8"):
                 st.warning("No changes to commit. The repository is up-to-date.")
                 return
             else:
                 raise
 
-        # Authenticate with GitHub
+        # Authenticate and set remote URL
         token = st.secrets["general"]["GITHUB_TOKEN"]
         repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/Victorias1905/{repo_name}.git"
+        subprocess.run(["git", "remote", "set-url", "origin", auth_remote], cwd=repo_path, check=True)
 
-        # Update remote URL
-        subprocess.run(["git", "remote", "set-url", "origin", auth_remote], check=True)
-
-        # Push changes
-        result = subprocess.run(["git", "push", "origin", "main"], capture_output=True, text=True)
+        # Push changes to the remote repository
+        result = subprocess.run(["git", "push", "origin", "main"], cwd=repo_path, capture_output=True, text=True)
         if result.returncode != 0:
             st.error(f"Git push failed:\nstdout: {result.stdout}\nstderr: {result.stderr}")
         else:
             st.success("Changes successfully pushed to GitHub!")
     except subprocess.CalledProcessError as e:
-        st.error(f"Git command failed:\nstdout: {e.stdout}\nstderr: {e.stderr}")
+        st.error(f"Git command failed:\nstdout: {e.stdout.decode('utf-8')}\nstderr: {e.stderr.decode('utf-8')}")
     except Exception as e:
-        st.error(f"Unexpected error occurred: {e}")
+        st.error(f"Unexpected error occurred: {str(e)}")
+
 
 
 
