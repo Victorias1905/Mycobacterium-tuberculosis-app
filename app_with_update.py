@@ -162,13 +162,6 @@ if process_button:
 
 def push_to_git():
 
-    with open("latest_model.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    data["model_name"] = new_model_name
-
-    with open("latest_model.json", "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
 
     # Configure Git user
     subprocess.run(["git", "config", "user.name", "Victorias1905"], check=True)
