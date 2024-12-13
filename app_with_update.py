@@ -8,6 +8,8 @@ import unicodedata
 import tiktoken
 import os
 import subprocess
+git config --global user.name "Victorias1905"
+git config --global user.email "victoria.strahova@student.uhasselt.be"
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 with open("latest_model.json", "r") as file:
