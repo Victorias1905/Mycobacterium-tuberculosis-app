@@ -205,4 +205,5 @@ def push_to_git():
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
 
-   
+if st.button("Push to GitHub"):
+    push_to_git()  
