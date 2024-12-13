@@ -8,8 +8,6 @@ import unicodedata
 import tiktoken
 import os
 import subprocess
-subprocess.run(['git', 'config', '--global', 'user.name', 'Victorias1905'])
-subprocess.run(['git', 'config', '--global', 'user.email', "102805197+Victorias1905@users.noreply.github.com"])
 
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
@@ -161,49 +159,44 @@ if process_button:
             break
 
 
-def push_to_github():
-    try:
-        # Replace the key below with your actual private key
-        # Make sure the formatting (including newline characters) is exactly correct.
-        ssh_key = """-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACAbapl4T8KNbM43QLAjskP7GXm6my7ZeHi7FotYATqaDwAAALjE6ArVxOgK
-1QAAAAtzc2gtZWQyNTUxOQAAACAbapl4T8KNbM43QLAjskP7GXm6my7ZeHi7FotYATqaDw
-AAAECrUjI0PBMQBTPNMVp2XNK/xql1Soj/HQN9h8ZmnIwpyxtqmXhPwo1szjdAsCOyQ/sZ
-ebqbLtl4eLsWi1gBOpoPAAAAMDEwMjgwNTE5NytWaWN0b3JpYXMxOTA1QHVzZXJzLm5vcm
-VwbHkuZ2l0aHViLmNvbQECAwQF
------END OPENSSH PRIVATE KEY-----
-"""
 
-        # Start the ssh-agent and parse its output
-        agent_output = subprocess.check_output(["ssh-agent", "-s"], text=True)
-        for line in agent_output.split("\n"):
-            if "SSH_AUTH_SOCK" in line:
-                sock = line.split(";", 1)[0].split("=")[1]
-                os.environ["SSH_AUTH_SOCK"] = sock
-            elif "SSH_AGENT_PID" in line:
-                pid = line.split(";", 1)[0].split("=")[1]
-                os.environ["SSH_AGENT_PID"] = pid
+new_model_name = st.text_input("Enter new model name:", "new-model-name")
+if st.button("Update and Push"):
+    update_model_name(new_model_name)
+def push_to_git(new_model_name):
+    # Update the model name in the JSON file
+    with open("latest_model.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-        # Add the private key to the agent
-        subprocess.run(["ssh-add", "-"], input=ssh_key.encode("utf-8"), check=True)
+    data["model_name"] = new_model_name
 
-        # Configure Git to use SSH for GitHub
-        subprocess.run(["git", "config", "--global", "url.ssh://git@github.com/.insteadOf", "https://github.com/"], check=True)
+    with open("latest_model.json", "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
 
-        # Add, commit, and push changes
-        subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Update GPT-MTBC app code"], check=True)
-        subprocess.run(["git", "push"], check=True)
+    # Configure Git user
+    subprocess.run(["git", "config", "user.name", "Victorias1905"], check=True)
+    subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], check=True)
 
-        st.success("Code successfully pushed to GitHub!")
-    except subprocess.CalledProcessError as e:
-        st.error(f"Error pushing to GitHub: {e}")
-    except Exception as ex:
-        st.error(f"Unexpected error: {ex}")
+    # Stage and commit changes
+    subprocess.run(["git", "add", "latest_model.json"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Update model name to {new_model_name}"], check=True)
 
-if st.button("Push to GitHub"):
-    push_to_github()
-     
+    # Use a PAT for authentication over HTTPS
+    # Replace the token below with a secure retrieval method, e.g., st.secrets["general"]["GITHUB_TOKEN"]
+    token = "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" 
+    repo_name = "Mycobacterium-tuberculosis-app"
+    auth_remote = f"https://{token}:x-oauth-basic@github.com/Victorias1905/{repo_name}.git"
 
+    # Point origin to the token-authenticated URL
+    subprocess.run(["git", "remote", "set-url", "origin", auth_remote], check=True)
+
+    # Push changes to the main branch
+    subprocess.run(["git", "push", "origin", "main"], check=True)
+
+    st.success("Model name successfully updated and changes pushed to GitHub!")
+
+st.title("Update Model Name and Push to GitHub")
+new_model_name = st.text_input("Enter new model name:", "new-model-name")
+if st.button("Update and Push"):
+    push_to_git(new_model_name)
    
