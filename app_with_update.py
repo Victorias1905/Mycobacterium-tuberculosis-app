@@ -9,11 +9,11 @@ import tiktoken
 import os
 
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
-LATEST_MODEL_FILE = "latest_model.json"
-with open(LATEST_MODEL_FILE, "r") as file:
+
+with open("latest_model.json", "r") as file:
     model_name = json.load(file).get("model_name")
 def save_latest_model(model_name):
-    with open(LATEST_MODEL_FILE, "w") as file:
+    with open("latest_model.json", "w") as file:
         json.dump({"model_name": model_name}, file)
 
 client = openai.OpenAI(api_key=api_key)
@@ -141,7 +141,6 @@ if process_button:
                          "learning_rate_multiplier":1,
                         "batch_size":1} )
     fine_tune_job_id = fine_tune_response.id
-    st.info(f"Fine-tuning started. Job ID: {fine_tune_job_id}")
  
     while True:
         job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
