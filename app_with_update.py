@@ -9,7 +9,8 @@ import tiktoken
 import os
 import subprocess
 subprocess.run(['git', 'config', '--global', 'user.name', 'Victoria Strahova'])
-git config --global user.email "victoria.strahova@student.uhasselt.be"
+subprocess.run(['git', 'config', '--global', 'user.email', "victoria.strahova@student.uhasselt.be"])
+
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 with open("latest_model.json", "r") as file:
