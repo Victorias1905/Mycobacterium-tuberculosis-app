@@ -162,15 +162,26 @@ if process_button:
        
 def push_to_github():
     try:
+        # Replace <your-token> with your actual PAT
+        token = "<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>"
+        remote_url = f"https://{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}@github.com/Victorias1905/Mycobacterium-tuberculosis-app.git"
+
+        # Set the remote URL with the token
+        subprocess.run(["git", "remote", "set-url", "origin", remote_url], check=True)
+
         # Add all changes
-        subprocess.run(["git", "push", "--force"], check=True)
+        subprocess.run(["git", "add", "."], check=True)
+
         # Commit changes
         subprocess.run(["git", "commit", "-m", "Update GPT-MTBC app code"], check=True)
-        # Push to the repository
-        subprocess.run(["git", "push"], check=True)
+
+        # Push changes
+        subprocess.run(["git", "push", "--force"], check=True)
+
         st.success("Code successfully pushed to GitHub!")
     except subprocess.CalledProcessError as e:
         st.error(f"Error pushing to GitHub: {e}")
+
 
 if st.button("Push to GitHub"):
     push_to_github()         
