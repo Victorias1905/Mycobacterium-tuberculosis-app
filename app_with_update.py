@@ -163,7 +163,7 @@ if process_button:
 def push_to_github():
     try:
         # Add all changes
-        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "push", "--force"], check=True)
         # Commit changes
         subprocess.run(["git", "commit", "-m", "Update GPT-MTBC app code"], check=True)
         # Push to the repository
