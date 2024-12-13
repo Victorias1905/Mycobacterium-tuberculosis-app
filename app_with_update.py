@@ -1,11 +1,5 @@
-
-import subprocess
-import os
-import streamlit as st
-
 def push_to_git_debug(model_name):
     try:
-        # Set up repository path
         repo_path = os.path.abspath(".")
 
         # Verify the Git repository
@@ -23,11 +17,13 @@ def push_to_git_debug(model_name):
         subprocess.run(["git", "add", "."], cwd=repo_path, check=True)
         subprocess.run(["git", "commit", "-m", f"Debug: Update model name to {model_name}"], cwd=repo_path, check=True, capture_output=True, text=True)
 
-        # Set GitHub remote URL
+        # Get the GitHub token
         token = st.secrets.get("general", {}).get("GITHUB_TOKEN", None)
         if not token:
             st.error("GitHub token is missing in secrets.")
             return
+
+        # Set GitHub remote URL
         username = "Victorias1905"
         repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/{username}/{repo_name}.git"
@@ -39,14 +35,14 @@ def push_to_git_debug(model_name):
             st.success("Changes successfully pushed to GitHub!")
         else:
             st.error(f"Git push failed:\nstdout: {result.stdout}\nstderr: {result.stderr}")
+
+        # Debugging details
+        st.write(f"Remote URL: {auth_remote}")
+        st.write(f"Token from secrets: {token[:4]}***")
     except subprocess.CalledProcessError as e:
         st.error(f"Git command failed:\nstdout: {e.stdout or 'No output'}\nstderr: {e.stderr or 'Unknown error'}")
     except Exception as e:
         st.error(f"Unexpected error: {e}")
-
-    # Debugging details
-    st.write(f"Remote URL: {auth_remote}")
-    st.write(f"Token from secrets: {token[:4]}***")
 
 # Streamlit interface
 st.title("Git Push Debug Tool")
