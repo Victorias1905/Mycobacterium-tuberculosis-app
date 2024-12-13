@@ -141,17 +141,24 @@ if process_button:
                          "learning_rate_multiplier":1,
                         "batch_size":1} )
     fine_tune_job_id = fine_tune_response.id
-    job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-    job_status = job_response.status
-    if job_status == "succeeded":
-        model_name = job_response.get("fine_tuned_model")
-        if model_name:
-            save_latest_model(model_name)
-            st.success(f"New model saved: {model_name}")
+    st.info(f"Fine-tuning started. Job ID: {fine_tune_job_id}")
+ 
+    while True:
+        job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
+        job_status = job_response.get("status")
+        if job_status == "succeeded":
+            model_name = job_response.get("fine_tuned_model")
+            if model_name:
+                save_latest_model(model_name)
+                st.success(f"New model saved: {model_name}")
+            else:
+                st.error("Fine-tuning succeeded, but model name was not retrieved.")
+            break
+        elif job_status in ["failed", "cancelled"]:
+            st.error(f"Fine-tuning failed or was cancelled. Status: {job_status}")
+            break
         else:
-            st.error("Fine-tuning succeeded, but model name was not retrieved.")
+            st.info(f"Fine-tuning in progress. Current status: {job_status}")
+           
    
-       
-                      
-    print("All fine-tuning jobs processed.")
    
