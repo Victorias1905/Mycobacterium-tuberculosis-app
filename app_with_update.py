@@ -8,7 +8,7 @@ import unicodedata
 import tiktoken
 import os
 import subprocess
-git config --global user.name "Victoria Strahova"
+subprocess.run(['git', 'config', '--global', 'user.name', 'Victoria Strahova'])
 git config --global user.email "victoria.strahova@student.uhasselt.be"
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
