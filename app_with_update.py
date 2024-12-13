@@ -169,10 +169,8 @@ def push_to_git():
         subprocess.run(["git", "config", "user.name", "Victorias1905"], check=True)
         subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], check=True)
 
-        # Add all changes, respecting .gitignore
+        # Add and commit changes
         subprocess.run(["git", "add", "."], check=True)
-
-        # Commit changes
         try:
             subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], check=True)
         except subprocess.CalledProcessError as e:
@@ -182,18 +180,25 @@ def push_to_git():
             else:
                 raise
 
-        # Push changes to GitHub
+        # Authenticate with GitHub
         token = st.secrets["general"]["GITHUB_TOKEN"]
         repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/Victorias1905/{repo_name}.git"
-        subprocess.run(["git", "remote", "set-url", "origin", auth_remote], check=True)
-        subprocess.run(["git", "push", "origin", "main"], check=True)
 
-        st.success("Changes successfully pushed to GitHub!")
+        # Update remote URL
+        subprocess.run(["git", "remote", "set-url", "origin", auth_remote], check=True)
+
+        # Push changes
+        result = subprocess.run(["git", "push", "origin", "main"], capture_output=True, text=True)
+        if result.returncode != 0:
+            st.error(f"Git push failed:\nstdout: {result.stdout}\nstderr: {result.stderr}")
+        else:
+            st.success("Changes successfully pushed to GitHub!")
     except subprocess.CalledProcessError as e:
         st.error(f"Git command failed:\nstdout: {e.stdout}\nstderr: {e.stderr}")
     except Exception as e:
         st.error(f"Unexpected error occurred: {e}")
+
 
 
 if st.button("Push to GitHub"):
