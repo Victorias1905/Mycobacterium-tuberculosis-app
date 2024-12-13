@@ -194,7 +194,7 @@ def push_to_git():
         st.error(f"Unexpected error: {e}")
     
     st.write(f"Remote URL: {auth_remote}")
-    st.write(f"Token from secrets: {st.secrets['general']['GITHUB_TOKEN']")
+    st.write(f"Token from secrets: {st.secrets['general']['GITHUB_TOKEN']}")
     
 
 # Streamlit button to trigger the function
