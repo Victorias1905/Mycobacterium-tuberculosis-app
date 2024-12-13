@@ -162,53 +162,41 @@ if process_button:
 
 def push_to_git():
     try:
-        # Ensure the current working directory is within a Git repo
         repo_path = os.path.abspath(".")
+        
+        # Verify the Git repository
         subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], cwd=repo_path, check=True, capture_output=True, text=True)
 
         # Configure Git user
         subprocess.run(["git", "config", "user.name", "Victorias1905"], cwd=repo_path, check=True)
         subprocess.run(["git", "config", "user.email", "102805197+Victorias1905@users.noreply.github.com"], cwd=repo_path, check=True)
 
-        # Add and commit changes
+        # Stage and commit changes
         subprocess.run(["git", "add", "."], cwd=repo_path, check=True)
-        try:
-            subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], cwd=repo_path, check=True)
-        except subprocess.CalledProcessError as e:
-            stderr = e.stderr.decode("utf-8") if e.stderr else "No error message"
-            if "nothing to commit" in stderr:
-                st.warning("No changes to commit. The repository is up-to-date.")
-                return
-            else:
-                st.error(f"Git commit failed: {stderr}")
-                return
-
-        # Authenticate and set remote URL
+        subprocess.run(["git", "commit", "-m", f"Update model name to {model_name}"], cwd=repo_path, check=True, capture_output=True, text=True)
+        
+        # Set GitHub remote URL
         token = st.secrets["general"]["GITHUB_TOKEN"]
-        repo_name = "Mycobacterium-tuberculosis-app"
         username = "Victorias1905"
+        repo_name = "Mycobacterium-tuberculosis-app"
         auth_remote = f"https://{token}@github.com/{username}/{repo_name}.git"
         subprocess.run(["git", "remote", "set-url", "origin", auth_remote], cwd=repo_path, check=True)
 
-        # Push changes to the remote repository
+        # Push changes to GitHub
         result = subprocess.run(["git", "push", "origin", "main"], cwd=repo_path, capture_output=True, text=True)
-        stdout = result.stdout or "No output"
-        stderr = result.stderr or "No error message"
-
-        if result.returncode != 0:
-            st.error(f"Git push failed:\nstdout: {stdout}\nstderr: {stderr}")
-        else:
+        if result.returncode == 0:
             st.success("Changes successfully pushed to GitHub!")
+        else:
+            st.error(f"Git push failed:\n{result.stderr}")
     except subprocess.CalledProcessError as e:
-        stderr = e.stderr.decode("utf-8") if e.stderr else "No error message"
-        stdout = e.stdout.decode("utf-8") if e.stdout else "No output"
-        st.error(f"Git command failed:\nstdout: {stdout}\nstderr: {stderr}")
+        st.error(f"Git command failed: {e.stderr or 'Unknown error'}")
     except Exception as e:
-        st.error(f"Unexpected error occurred: {str(e)}")
+        st.error(f"Unexpected error: {e}")
 
-
-
-
-
+# Streamlit button to trigger the function
 if st.button("Push to GitHub"):
-    push_to_git()  
+    push_to_git()
+
+
+
+
