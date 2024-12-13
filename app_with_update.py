@@ -145,9 +145,9 @@ if process_button:
  
     while True:
         job_response = client.fine_tuning.jobs.retrieve(fine_tune_job_id)
-        job_status = job_response.get("status")
+        job_status = job_response.status
         if job_status == "succeeded":
-            model_name = job_response.get("fine_tuned_model")
+            model_name = job_response.fine_tuned_model
             if model_name:
                 save_latest_model(model_name)
                 st.success(f"New model saved: {model_name}")
