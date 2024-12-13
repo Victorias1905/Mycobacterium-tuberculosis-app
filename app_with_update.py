@@ -121,7 +121,7 @@ def pdf_preprocessing(article, outfile):
 # Streamlit app
 st.title("Model update - upload at least ten articles")
 uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
-
+process_button = st.button('Update', key='Update')
 # Process each uploaded file
 if uploaded_files:
     with open("json_output_file", 'a', encoding='utf-8') as outfile:
@@ -130,7 +130,7 @@ if uploaded_files:
 
     st.success("Files processed successfully!")
 
-if st.button('Update', key='Update'):
+if process_button:
     response = client.files.create(
     file=open("json_output_file", 'rb'),
     purpose='fine-tune'
