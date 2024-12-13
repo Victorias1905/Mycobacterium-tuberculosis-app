@@ -157,7 +157,7 @@ if process_button:
                 save_latest_model(model_name)
             break
        
-  def push_to_github():
+def push_to_github():
     try:
         # Add all changes
         subprocess.run(["git", "add", "."], check=True)
