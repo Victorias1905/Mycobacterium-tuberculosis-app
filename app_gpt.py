@@ -87,10 +87,7 @@ with col2:
     if user_input_model2:
         # Generate embedding
         query_embedding = get_embedding(user_input_model2)
-
-        # Query Zilliz
-        zilliz_results = query_zilliz(query_embedding, top_k=5)
-        retrieved_texts = [result.entity.get(embedding_field) for result in zilliz_results]
+        retrieved_texts = [f"ID: {hit.id}, Distance: {hit.distance}" for result in results for hit in result]
 
         # Construct prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
