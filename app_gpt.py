@@ -87,7 +87,11 @@ with col2:
     if user_input_model2:
         # Generate embedding
         query_embedding = get_embedding(user_input_model2)
-        retrieved_texts = [f"ID: {hit.id}, Distance: {hit.distance}" for result in results for hit in result]
+        retrieved_texts = []
+        for result in results:
+            for hit in result:
+        # If you have metadata stored, replace "metadata_field" with the correct field
+                retrieved_texts.append(hit.entity.get("metadata_field")) 
 
         # Construct prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
