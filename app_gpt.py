@@ -39,7 +39,7 @@ def query_zilliz(query_embedding, top_k=5):
     results = collection.search(
         data=[query_embedding],
         anns_field="vector",  # Correct field name
-        param={"metric_type": "IP", "params": {"nprobe": 10}},  # Adjust metric_type if needed
+        param={"metric_type": "COSINE", "params": {"nprobe": 10}},  # Use COSINE metric
         limit=top_k
     )
     return results
