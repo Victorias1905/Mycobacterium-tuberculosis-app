@@ -98,7 +98,7 @@ with col2:
                     output_fields=[embedding_field]
                 )
                 if result:
-                    retrieved_texts.append(result[0][0][embedding_field])
+                    retrieved_texts.append(result[0][embedding_field])
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
         # Get response from the fine-tuned model
         response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
