@@ -93,7 +93,6 @@ with col2:
         for hits in zilliz_results:
             for hit in hits:
                 retrieved_texts.append(collection.get(hit.id)[0][embedding_field])
-
         # Construct prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
 
