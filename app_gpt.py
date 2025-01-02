@@ -99,7 +99,7 @@ with col2:
                 )
                 if result:
                     retrieved_texts.append(result[0][0][embedding_field])
-         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
+        prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
         # Get response from the fine-tuned model
         response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
         st.session_state.chat_history_model2.append({"user": user_input_model2, "bot": response_model2})
