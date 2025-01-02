@@ -36,11 +36,10 @@ def get_embedding(text):
     return vector 
 
 def query_zilliz(query_embedding, top_k=5):
-    """Query Zilliz for similar embeddings."""
     results = collection.search(
         data=[query_embedding],
-        anns_field=embedding_field, 
-        param={"metric_type": "IP", "params": {"nprobe": 10}},
+        anns_field="vector",  # Correct field name
+        param={"metric_type": "IP", "params": {"nprobe": 10}},  # Adjust metric_type if needed
         limit=top_k
     )
     return results
