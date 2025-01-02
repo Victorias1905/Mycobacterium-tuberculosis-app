@@ -103,10 +103,8 @@ with col2:
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
 
         # Display the retrieved references
-        st.write("**Retrieved references:**")
-        for text in retrieved_texts:
-            st.write(text)
-
+        st.write(prompt_with_references)
+      
         # Get the response from the language model
         response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
         
