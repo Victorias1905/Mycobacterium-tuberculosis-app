@@ -89,7 +89,6 @@ with col2:
         query_embedding = get_embedding(user_input_model2)
         zilliz_results = query_zilliz(query_embedding, top_k=5)
    
-       
         retrieved_texts = []
         for hits in zilliz_results:
             for hit in hits:
@@ -99,14 +98,25 @@ with col2:
                 )
                 if result:
                     retrieved_texts.append(result[0][embedding_field])
+
+        # Construct the prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
-        # Get response from the fine-tuned model
+
+        # Display the retrieved references
+        st.write("**Retrieved references:**")
+        for text in retrieved_texts:
+            st.write(text)
+
+        # Get the response from the language model
         response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
+        
+        # Add the user input and bot response to the chat history
         st.session_state.chat_history_model2.append({"user": user_input_model2, "bot": response_model2})
 
+    # Display the chat history
     for chat in st.session_state.chat_history_model2:
         st.write(f"You: {chat['user']}")
-        st.write(f"Bot: {chat['bot']}")
+        st.write(f"Bot: {chat['bot']}") 
 
 
 
