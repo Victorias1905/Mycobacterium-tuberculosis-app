@@ -90,11 +90,14 @@ with col2:
         zilliz_results = query_zilliz(query_embedding, top_k=5)
         
         retrieved_texts = []
-        for hits in zilliz_results:
-            for hit in hits:
-                retrieved_texts.append(collection.get(hit.id)[0][embedding_field])
+         for hits in zilliz_results:
+             for hit in hits:
+                 result = collection.get(hit.id)
+                 if result:
+                    retrieved_texts.append(result[0][embedding_field]) 
         # Construct prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
+       
 
         # Get response from the fine-tuned model
         response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
