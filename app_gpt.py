@@ -97,7 +97,7 @@ with col2:
                     output_fields=[embedding_field]
                 )
                 if result:
-                    retrieved_texts.append(result[0][embedding_field])
+                    retrieved_texts.append(result[0])
 
         # Construct the prompt with references
         prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
