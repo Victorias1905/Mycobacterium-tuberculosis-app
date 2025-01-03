@@ -95,10 +95,8 @@ user_query = st.text_input("Enter your query:")
 
 if user_query:
     # Step 1: Generate embedding
-     user_vector = get_embedding(user_query)
-
+    user_vector = get_embedding(user_query)
     if user_vector:
-        # Step 2: Query Zilliz
         closest_results = query_zilliz(user_vector, top_k=5)
 
         if closest_results:
