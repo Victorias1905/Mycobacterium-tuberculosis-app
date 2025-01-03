@@ -62,7 +62,7 @@ def query_zilliz(query_embedding, top_k=5):
             param={"metric_type": "COSINE", "params": {"nprobe": 10}},
             limit=top_k
         )
-        st.write(f"Search results: {results}")
+      
         return results
     except Exception as e:
         st.write(f"Error querying Zilliz: {e}")
