@@ -11,7 +11,7 @@ import tempfile
 # Streamlit configuration
 st.set_page_config(layout="wide")
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
-
+tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
 # Zilliz Cloud connection details
 zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com"
 zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e"
