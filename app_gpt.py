@@ -37,13 +37,13 @@ def get_embedding(user_query):
         st.write(f"Error generating embedding: {e}")
         return None
 
-def query_zilliz(user_vector, top_k=5):
+def query_zilliz(user_vector, top_k=10):
     """Query Zilliz database."""
     try:
         closest_results = collection.search(
             data=[user_vector],
             anns_field="vector",
-            param={"metric_type": "COSINE", "params": {"nprobe": 5}},
+            param={"metric_type": "COSINE", "params": {"nprobe": 10}},
             limit=top_k,
             output_fields=["text", "metadata"] 
         )
