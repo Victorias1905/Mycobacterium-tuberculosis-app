@@ -43,7 +43,7 @@ def query_zilliz(user_vector, top_k=10):
         closest_results = collection.search(
             data=[user_vector],
             anns_field="vector",
-            param={"metric_type": "COSINE", "params": {"nprobe": 10}},
+            param={"metric_type": "COSINE", "params": {"nprobe": 64}},
             limit=top_k,
             output_fields=["text", "metadata"] 
         )
