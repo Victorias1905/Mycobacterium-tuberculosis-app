@@ -142,9 +142,8 @@ for idx, item in enumerate(st.session_state.answers, start=1):
     st.write(f"**Q{idx}:** {item['question']}")
     st.write(f"**Answer:** {item['answer']}")
     st.write("**Metadata:**")
-    for meta in item["metadata"]:
-        st.write(f"- {meta}")
-
+    for metadata in item["metadata"]:
+        st.write(f"- Reference: {metadata.get('reference', 'No reference found')}")
 # -------------
 # Update Database Section
 # -------------
@@ -236,7 +235,6 @@ if preprocess_button:
         st.write("Data inserted successfully!")
     else:
         st.warning("Please upload at least one PDF file.")
-
 
 
 
