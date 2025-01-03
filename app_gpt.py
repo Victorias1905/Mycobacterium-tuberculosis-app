@@ -9,7 +9,8 @@ import os
 import subprocess
 import tempfile
 # Streamlit configuration
-st.set_page_config(layout="wide")
+if "conversation" not in st.session_state:
+    st.session_state["conversation"] = []
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
