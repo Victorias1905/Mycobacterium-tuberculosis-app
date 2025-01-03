@@ -7,16 +7,16 @@ st.set_page_config(layout="wide")
 api_key = st.secrets["general"]["OPENAI_API_KEY"]
 
 # Zilliz Cloud connection details
-zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com" 
-zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e" 
-collection_name = "Mycobacterium" 
+zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com"
+zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e"
+collection_name = "Mycobacterium"
 embedding_field = "Mycobacterium"  # Field name for embeddings in Zilliz
 
 # Connect to Zilliz Cloud
-connections.connect("default", uri=zilliz_uri, token=zilliz_token) 
+connections.connect("default", uri=zilliz_uri, token=zilliz_token)
 zilliz_client = MilvusClient(uri=zilliz_uri, token=zilliz_token)
 zilliz_client.describe_collection(collection_name=collection_name)
-collection = Collection(collection_name)  
+collection = Collection(collection_name)
 
 def get_response(prompt, model):
     """Generate a response using OpenAI."""
@@ -30,16 +30,18 @@ def get_response(prompt, model):
 def get_embedding(text):
     """Generate embedding for text using OpenAI."""
     embedding_response = openai.OpenAI(api_key=api_key).embeddings.create(
-        input=text, 
-        model="text-embedding-3-small")
+        input=text,
+        model="text-embedding-3-small"
+    )
     vector = embedding_response.data[0].embedding
-    return vector 
+    return vector
 
 def query_zilliz(query_embedding, top_k=5):
+    """Search for similar documents in the Zilliz vector database."""
     results = collection.search(
         data=[query_embedding],
-        anns_field="vector",  # Correct field name
-        param={"metric_type": "COSINE", "params": {"nprobe": 10}},  # Use COSINE metric
+        anns_field="vector",  # Ensure this matches your actual vector field name
+        param={"metric_type": "COSINE", "params": {"nprobe": 10}},
         limit=top_k
     )
     return results
@@ -54,67 +56,51 @@ def construct_prompt_with_references(query, references):
     )
 
 # Streamlit App
-st.title("Compare OpenAI Models with and without Zilliz")
+st.title("Chatbot with Zilliz References")
 
-col1, col2 = st.columns(2)
+# Maintain chat history in session state
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
-# Model 1 - Without references
-with col1:
-    st.markdown("### Model 1: Without references")
+# Text input for user's query
+user_input = st.text_input("Enter your question:")
 
-    if 'chat_history_model1' not in st.session_state:
-        st.session_state.chat_history_model1 = []
+if user_input:
+    # Generate embedding for the user query
+    query_embedding = get_embedding(user_input)
+    zilliz_results = query_zilliz(query_embedding, top_k=5)
 
-    user_input_model1 = st.text_input("You (Model 1):", key="user_input_model1")
+    # Retrieve texts from Zilliz
+    retrieved_texts = []
+    for hits in zilliz_results:
+        for hit in hits:
+            # Adjust the field/fields you want to retrieve here
+            result = collection.query(
+                expr=f"id == {hit.id}",
+                output_fields=[embedding_field]
+            )
+            if result:
+                # Extract the actual text content from result
+                # Adjust indexing/field name as needed for your schema
+                retrieved_texts.append(result[0].get(embedding_field, ""))
 
-    if user_input_model1:
-        response_model1 = get_response(user_input_model1, "ft:gpt-4o-mini-2024-07-18:mtbc-project::AkyZCr4h")
-        st.session_state.chat_history_model1.append({"user": user_input_model1, "bot": response_model1})
+    # Construct the prompt with references
+    prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
+    
+    # Display the combined prompt for reference
+    st.write("**Prompt with references:**")
+    st.write(prompt_with_references)
 
-    for chat in st.session_state.chat_history_model1:
-        st.write(f"You: {chat['user']}")
-        st.write(f"Bot: {chat['bot']}")
+    # Get the response from the language model (Model 2)
+    response = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
 
-# Model 2 - With references
-with col2:
-    st.markdown("### Model 2: With references")
+    # Update chat history
+    st.session_state.chat_history.append({"user": user_input, "bot": response})
 
-    if 'chat_history_model2' not in st.session_state:
-        st.session_state.chat_history_model2 = []
-
-    user_input_model2 = st.text_input("You (Model 2):", key="user_input_model2")
-
-    if user_input_model2:
-        # Generate embedding
-        query_embedding = get_embedding(user_input_model2)
-        zilliz_results = query_zilliz(query_embedding, top_k=5)
-   
-        retrieved_texts = []
-        for hits in zilliz_results:
-            for hit in hits:
-                result = collection.query(
-                    expr=f"id == {hit.id}", 
-                    output_fields=[embedding_field]
-                )
-                if result:
-                    retrieved_texts.append(result)
-
-        # Construct the prompt with references
-        prompt_with_references = construct_prompt_with_references(user_input_model2, retrieved_texts)
-
-        # Display the retrieved references
-        st.write(prompt_with_references)
-      
-        # Get the response from the language model
-        response_model2 = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
-        
-        # Add the user input and bot response to the chat history
-        st.session_state.chat_history_model2.append({"user": user_input_model2, "bot": response_model2})
-
-    # Display the chat history
-    for chat in st.session_state.chat_history_model2:
-        st.write(f"You: {chat['user']}")
-        st.write(f"Bot: {chat['bot']}") 
+# Display the chat history
+for chat in st.session_state.chat_history:
+    st.write(f"**You:** {chat['user']}")
+    st.write(f"**Bot:** {chat['bot']}")
 
 
 
