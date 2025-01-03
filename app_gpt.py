@@ -227,8 +227,8 @@ if update_button:
         
             client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
         st.write("Data inserted successfully!")
-     except:
-            st.warning("Please preprocess files before!")
+    except:
+        st.warning("Please preprocess files before!")
 
 
 
