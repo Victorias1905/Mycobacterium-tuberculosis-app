@@ -76,6 +76,7 @@ def construct_prompt_with_references(user_query, references):
         f"Retrieved references:\n{references_str}\n\n"
         "Provide the most relevant response based on the query and references."
     )
+    st.write(prompt)
     return prompt
 def get_response(prompt):
     """Generate a response using OpenAI."""
