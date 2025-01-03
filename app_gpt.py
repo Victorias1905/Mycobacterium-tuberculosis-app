@@ -113,7 +113,7 @@ if user_query:
 
                 # Step 5: Get response from OpenAI
                 response = get_response(prompt, retrieved_texts)
-                st.write(responce)
+                st.write(response)
             else:
                 st.write("No relevant references found.")
         else:
