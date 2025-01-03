@@ -217,9 +217,7 @@ if preprocess_button:
                 "text": chunk,
                 "metadata": metadata,  
             }
-       
-        
-        client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
+            client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
         st.write("Data inserted successfully!")
     else:
         st.warning("Please upload at least one PDF file.")
