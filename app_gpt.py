@@ -60,7 +60,7 @@ def extract_relevant_data( closest_results):
         text = result[0].text
         metadata = result[0].metadata
         retrieved_texts.append({"text": text, "metadata": metadata})
-    st.write(len(retrieved_texts)
+    st.write(len(retrieved_texts))
     return retrieved_texts
 def construct_prompt_with_references(user_query, retrieved_texts):
      references_str = "\n\n".join(
