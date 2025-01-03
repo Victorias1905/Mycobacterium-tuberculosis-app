@@ -82,7 +82,7 @@ def get_response(prompt, retrieved_texts):
             messages=[{"role": "user", "content": prompt}]
         )
         answer = response.choices[0].message.content.strip()
-        st.write(f"Response from model: {response}")
+       
         full_response = {
             "answer": answer,
             "metadata": [data["metadata"] for data in retrieved_texts]
@@ -113,7 +113,11 @@ if user_query:
 
                 # Step 5: Get response from OpenAI
                 response = get_response(prompt, retrieved_texts)
-                st.write(response)
+                if response:
+                    st.write("Answer:")
+                    st.write(response["answer"])
+                    st.write("Relevant Metadata:")
+                    st.write(response_with_metadata["metadata"])
             else:
                 st.write("No relevant references found.")
         else:
