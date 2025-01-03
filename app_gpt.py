@@ -17,16 +17,7 @@ try:
     connections.connect("default", uri=zilliz_uri, token=zilliz_token)
     zilliz_client = MilvusClient(uri=zilliz_uri, token=zilliz_token)
     collection = Collection(collection_name)
-    collection.drop_index()
-    st.write("Existing index dropped.")
-    collection.create_index(
-    field_name="vector",
-    index_params={
-        "index_type": "IVF_FLAT",
-        "metric_type": "COSINE",
-        "params": {"nlist": 128}}) # Adjust `nlist` based on dataset size (higher for larger datasets)
-    collection.load()
-
+   
 except Exception as e:
     st.write(f"Failed to connect to Zilliz Cloud: {e}")
 
