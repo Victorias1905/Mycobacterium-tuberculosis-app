@@ -46,7 +46,7 @@ def query_zilliz(query_embedding, top_k=5):
             data=[query_embedding],
             anns_field="vector",
             param={"metric_type": "COSINE", "params": {"nprobe": 10}},
-            limit=top_k
+            limit=top_k,
             output_fields=["text", "metadata"] 
         )
       
