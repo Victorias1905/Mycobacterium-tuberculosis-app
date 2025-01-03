@@ -117,7 +117,8 @@ if user_query:
                     st.write("Answer:")
                     st.write(response["answer"])
                     st.write("Relevant Metadata:")
-                    st.write(response["metadata"])
+                    for metadata in response["metadata"]:
+                        st.write(f"- Reference: {metadata.get('reference', 'No reference found')}")
             else:
                 st.write("No relevant references found.")
         else:
