@@ -17,9 +17,10 @@ try:
     connections.connect("default", uri=zilliz_uri, token=zilliz_token)
     zilliz_client = MilvusClient(uri=zilliz_uri, token=zilliz_token)
     collection = Collection(collection_name)
+    
     index_info = collection.indexes
-    st.write("Index Info:", index_info)
-
+    for index in index_info:
+        st.write(f"Index parameters: {index.params}")
     st.write("Connected to Zilliz Cloud successfully!")
 except Exception as e:
     st.write(f"Failed to connect to Zilliz Cloud: {e}")
