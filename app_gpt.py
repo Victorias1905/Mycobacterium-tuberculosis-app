@@ -223,7 +223,7 @@ if preprocess_button:
         if update_button:
             client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
             st.write("Data inserted successfully!")
-     else:
+    else:
         st.warning("Please upload at least one PDF file.")
 
 
