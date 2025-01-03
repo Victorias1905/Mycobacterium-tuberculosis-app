@@ -92,27 +92,30 @@ if user_input:
         # Query Zilliz
         zilliz_results = query_zilliz(query_embedding, top_k=5)
 
-        if zilliz_results:
-            retrieved_texts = []
-            for hits in zilliz_results:
-                for hit in hits:
-                    try:
-                        result = collection.query(expr=f"Auto_id == {hit.id}",output_fields=["vector"])
-                        if result:
-                            st.write(f"Retrieved document for ID {hit.id}: {result}")
-                            retrieved_texts.append(result[0][embedding_field])
-                        else:
-                            st.write(f"No document found for ID {hit.id}")
-                    except Exception as e:
-                        st.write(f"Error retrieving document for ID {hit.id}: {e}")
+    if zilliz_results:
+        retrieved_texts = []
+        for hits in zilliz_results:
+            for hit in hits:
+                try:
+                    # Ensure Auto_id is the correct field name
+                    result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector", "your_text_field"])
+                    if result and len(result) > 0:
+                        st.write(f"Retrieved document for ID {hit.id}: {result}")
+                        # Ensure the correct field is used to append to retrieved_texts
+                        retrieved_texts.append(result[0]["your_text_field"])  # Replace "your_text_field" with the actual field name
+                    else:
+                        st.write(f"No document found for ID {hit.id}")
+                except Exception as e:
+                    st.write(f"Error retrieving document for ID {hit.id}: {e}")
+    
+        # Construct the prompt with references
+        if retrieved_texts:
+            prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
+            response_with_references = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
+            st.write(f"Response with references: {response_with_references}")
+        else:
+            st.write("No relevant references retrieved.")
 
-            # Construct the prompt with references
-            if retrieved_texts:
-                prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
-                response_with_references = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
-                st.write(f"Response with references: {response_with_references}")
-            else:
-                st.write("No relevant references retrieved.")
 
 
 
