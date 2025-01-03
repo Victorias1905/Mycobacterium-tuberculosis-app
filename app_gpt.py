@@ -70,7 +70,8 @@ def query_zilliz(query_embedding, top_k=5):
 
 def construct_prompt_with_references(query, references):
     """Constructs a prompt with user query and retrieved references."""
-    formatted_references = "\n".join(references)
+    # Ensure all references are strings
+    formatted_references = "\n".join([str(ref) for ref in references])
     prompt = (
         f"User query: {query}\n\n"
         f"Relevant information from the database:\n{formatted_references}\n\n"
@@ -99,10 +100,10 @@ if user_input:
                 try:
                     # Ensure Auto_id is the correct field name
                     result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector"])
-                    if result and len(result) > 0:
-                        st.write(f"Retrieved document for ID {hit.id}: {result}")
-                        # Ensure the correct field is used to append to retrieved_texts
-                        retrieved_texts.append(result[0]["vector"]) 
+                   if result and len(result) > 0:
+                       st.write(f"Retrieved document for ID {hit.id}: {result}")
+    # Convert the retrieved content to a string if it's not already
+                        retrieved_texts.append(str(result[0]["vector"])) 
                     else:
                         st.write(f"No document found for ID {hit.id}")
                 except Exception as e:
