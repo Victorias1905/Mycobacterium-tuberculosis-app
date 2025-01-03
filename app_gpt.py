@@ -200,7 +200,7 @@ if preprocess_button:
                 "text": cleaned_text }
             Update_list.append(output)
         st.success("Files processed successfully!")
-        chunks, chunk_metadata = chunk_documents_with_references(Update_list, tokenizer, max_tokens=7000)
+        chunks, chunk_metadata = chunk_documents_with_references(Update_list, tokenizer)
         
         st.write("Number of chunks created:", len(chunks))
         st.write("Chunk metadata example:", chunk_metadata[:3])  # show first few metadata entries
