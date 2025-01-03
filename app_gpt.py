@@ -48,7 +48,7 @@ def query_zilliz(user_vector, top_k=5):
             limit=top_k,
             output_fields=["text", "metadata"] 
         )
-      
+        st.write(closest_results)
         return  closest_results
     except Exception as e:
         st.write(f"Error querying Zilliz: {e}")
