@@ -2,7 +2,7 @@ import openai
 import streamlit as st
 from pymilvus import connections, Collection, MilvusClient
 from pdfminer.high_level import extract_text
-from transformers import AutoTokenizer, AutoModelForCausalLM
+
 import unicodedata
 import tiktoken
 import os
