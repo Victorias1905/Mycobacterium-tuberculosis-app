@@ -207,13 +207,15 @@ if preprocess_button:
         chunks, chunk_metadata = chunk_documents_with_references(Update_list)
         
         st.write("Number of chunks created:", len(chunks))
-        st.write("Chunk metadata example:", chunk_metadata[:3])  # show first few metadata entries
+        
         embeddings=generate_embeddings(chunks)
         vectors = [embedding.data[0] for embedding in embeddings] 
         vectors_float = [vector.embedding for vector in vectors]
+     else:
+        st.warning("Please upload at least one PDF file.")
        
-
-        # Prepare data for insertion
+if update_button:
+    try:
         ids = list(range(len(chunks)))  # Generate unique IDs
         for id,vector, chunk, metadata in zip(ids,vectors_float, chunks, chunk_metadata):
             data_to_insert = {
@@ -224,9 +226,9 @@ if preprocess_button:
             }
         
             client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
-        print("Data inserted successfully!")
-    else:
-        st.warning("Please upload at least one PDF file.")
+        st.write("Data inserted successfully!")
+     except:
+            st.warning("Please preprocess files before!")
 
 
 
