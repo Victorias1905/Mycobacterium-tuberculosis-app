@@ -184,7 +184,7 @@ def chunk_documents_with_references(Update_list):
 def generate_embeddings(chunks):
     embeddings = []
     for chunk in chunks:
-        response = client.embeddings.create(
+        response = openai.embeddings.create(
         input=chunk,
         model="text-embedding-3-small")
         embeddings.append(response)
