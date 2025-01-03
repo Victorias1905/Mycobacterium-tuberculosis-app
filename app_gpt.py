@@ -136,7 +136,7 @@ if user_query:
 st.title("Update Database")
 uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
 preprocess_button=st.button("Preprocess", key="Preprocess")
-process_button = st.button('Update', key='Update')
+update_button = st.button('Update', key='Update')
 
 
 def process_pdf(pdf_file):
