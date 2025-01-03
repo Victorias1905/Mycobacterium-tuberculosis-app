@@ -110,7 +110,7 @@ def get_response(prompt, retrieved_texts):
 # Main App
 # -------------
 
-st.title("Debugging Zilliz Retrieval")
+st.title("OpenAI models + vector database")
 
 user_query = st.text_input("Enter your query:")
 if user_query:
