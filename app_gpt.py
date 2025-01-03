@@ -82,7 +82,7 @@ def get_response(prompt, retrieved_texts):
             messages=[{"role": "user", "content": prompt}]
         )
         answer = response.choices[0].message.content.strip()
-        st.write(f"Response from model: {result}")
+        st.write(f"Response from model: {response}")
         full_response = {
             "answer": answer,
             "metadata": [data["metadata"] for data in retrieved_texts]
