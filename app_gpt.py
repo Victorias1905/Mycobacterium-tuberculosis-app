@@ -97,10 +97,7 @@ if user_input:
             for hits in zilliz_results:
                 for hit in hits:
                     try:
-                        result = collection.query(
-                            expr=f"id == {hit.id}",
-                            output_fields=[embedding_field]
-                        )
+                        result = collection.query(expr=f"Auto_id == {hit.id}",output_fields=["vector"])
                         if result:
                             st.write(f"Retrieved document for ID {hit.id}: {result}")
                             retrieved_texts.append(result[0][embedding_field])
