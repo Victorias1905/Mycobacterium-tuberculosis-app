@@ -40,7 +40,7 @@ def get_response(prompt, model):
 def get_embedding(text):
     try:
         st.write(f"Generating embedding for: {text}")
-        embedding_response = openai.Embedding.create(
+        embedding_response =  client.embeddings.create(
             api_key=api_key,
             input=text,
             model="text-embedding-3-small"  # Updated to the correct model
