@@ -114,7 +114,7 @@ with col2:
     # Display the chat history
     for chat in st.session_state.chat_history_model2:
         st.write(f"You: {chat['user']}")
-        st.write(f"Bot: {chat['bot']}")  keep only model 2 and one window
+        st.write(f"Bot: {chat['bot']}")  
 
 
 
