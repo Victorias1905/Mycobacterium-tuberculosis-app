@@ -10,7 +10,7 @@ api_key = st.secrets["general"]["OPENAI_API_KEY"]
 zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com"
 zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e"
 collection_name = "Mycobacterium"
-embedding_field = "Mycobacterium"  # Field name for embeddings in Zilliz
+embedding_field = "vector"  # Field name for embeddings in Zilliz
 
 # Connect to Zilliz Cloud
 try:
@@ -98,11 +98,11 @@ if user_input:
             for hit in hits:
                 try:
                     # Ensure Auto_id is the correct field name
-                    result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector", "your_text_field"])
+                    result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector"])
                     if result and len(result) > 0:
                         st.write(f"Retrieved document for ID {hit.id}: {result}")
                         # Ensure the correct field is used to append to retrieved_texts
-                        retrieved_texts.append(result[0]["your_text_field"])  # Replace "your_text_field" with the actual field name
+                        retrieved_texts.append(result[0]["vector"]) 
                     else:
                         st.write(f"No document found for ID {hit.id}")
                 except Exception as e:
