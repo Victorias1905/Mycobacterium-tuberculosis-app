@@ -70,7 +70,7 @@ def construct_prompt_with_references(user_query, retrieved_texts):
         f"Retrieved references:\n{references_str}\n\n"
         "Provide response for the query. The responce should be based on the references."
     )
-     st.write(prompt)
+  
      return prompt
 def get_response(prompt, retrieved_texts):
     """Generate a response using OpenAI."""
@@ -113,7 +113,7 @@ if user_query:
 
                 # Step 5: Get response from OpenAI
                 response = get_response(prompt, retrieved_texts)
-                st.write(f"Response:\n{response}")
+                st.write(responce)
             else:
                 st.write("No relevant references found.")
         else:
