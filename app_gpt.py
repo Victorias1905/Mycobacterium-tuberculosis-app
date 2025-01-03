@@ -37,7 +37,7 @@ def get_embedding(user_query):
         st.write(f"Error generating embedding: {e}")
         return None
 
-def query_zilliz(user_vector, top_k=10):
+def query_zilliz(user_vector, top_k=3):
     """Query Zilliz database."""
     try:
         closest_results = collection.search(
@@ -102,7 +102,7 @@ if user_query:
     # Step 1: Generate embedding
     user_vector = get_embedding(user_query)
     if user_vector:
-        closest_results = query_zilliz(user_vector, top_k=5)
+        closest_results = query_zilliz(user_vector, top_k=3)
 
         if closest_results:
             # Step 3: Extract relevant data
