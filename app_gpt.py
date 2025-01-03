@@ -59,19 +59,21 @@ def extract_relevant_data( closest_results):
         # Extract text and metadata fields
         text = result[0].text
         metadata = result[0].metadata
-        # Combine into a single string for the prompt
-        retrieved_texts.append(f"Text: {text}\nMetadata: {metadata}")
+        retrieved_data.append({"text": text, "metadata": metadata})
     return retrieved_texts
 def construct_prompt_with_references(user_query, retrieved_texts):
-    references_str = "\n\n".join(retrieved_texts)
-    prompt = (
+     references_str = "\n\n".join(
+        [f"Text: {data['text']}\nMetadata: {data['metadata']}" for data in retrieved_texts]
+    )
+     prompt = (
         f"User query: {user_query}\n\n"
         f"Retrieved references:\n{references_str}\n\n"
-        "Provide the most relevant response based on the query and references."
+        "Provide response for the query. The responce should be based on the references."
     )
+
     st.write(prompt)
     return prompt
-def get_response(prompt):
+def get_response(prompt, retrieved_texts):
     """Generate a response using OpenAI."""
     try:
        
@@ -80,9 +82,13 @@ def get_response(prompt):
             model=model,
             messages=[{"role": "user", "content": prompt}]
         )
-        result = response.choices[0].message.content.strip()
+        answer = response.choices[0].message.content.strip()
         st.write(f"Response from model: {result}")
-        return result
+        full_response = {
+            "answer": answer,
+            "metadata": [data["metadata"] for data in retrieved_texts]
+        }
+        return full_response
     except Exception as e:
         st.write(f"Error generating response: {e}")
         return None
@@ -107,7 +113,7 @@ if user_query:
                 prompt = construct_prompt_with_references(user_query, retrieved_texts)
 
                 # Step 5: Get response from OpenAI
-                response = get_response(prompt)
+                response = get_response(prompt, retrieved_texts)
                 st.write(f"Response:\n{response}")
             else:
                 st.write("No relevant references found.")
