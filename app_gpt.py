@@ -101,7 +101,7 @@ if user_input:
                     # Ensure Auto_id is the correct field name
                     result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector"])
                     if result and len(result) > 0:
-                        st.write(f"Retrieved document for ID {hit.id}: {result}")
+                        
     # Convert the retrieved content to a string if it's not already
                         retrieved_texts.append(str(result[0]["vector"])) 
                     else:
