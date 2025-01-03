@@ -17,7 +17,8 @@ zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.
 zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e"
 collection_name = "Mycobacterium"
 embedding_field = "vector"  # Field name for embeddings in Zilliz
-model="ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I"
+model_ids=["ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I","ft:gpt-4o-mini-2024-07-18:mtbc-project::AkyZCr4h","gpt-4o-mini-2024-07-18"]
+model = st.selectbox("Select Model", model_ids)
 client = openai.OpenAI(api_key=api_key)
 client_milvus = MilvusClient(
     uri="https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com",
