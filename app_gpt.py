@@ -172,12 +172,12 @@ def chunk_documents_with_references(Update_list):
         tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
         tokens = tokenizer.encode(item.get("text"))
         max_tokens=7000
-        for i in range(0, len(tokens)):
+        for i in range(0, len(tokens),max_tokens):
             chunk_tokens = tokens[i:i + max_tokens]
             chunk_text = tokenizer.decode(chunk_tokens)  # Convert tokens back to text
             chunks.append(chunk_text)
             chunk_metadata.append({"filename": item.get("filename")})
-            i=i+max_tokens
+          
     
     return chunks, chunk_metadata
 
