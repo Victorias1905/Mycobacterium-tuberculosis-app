@@ -55,7 +55,7 @@ def query_zilliz(user_vector, top_k=5):
 def extract_relevant_data( closest_results):
     """Extract text and metadata from Zilliz search results."""
     retrieved_texts = []
-    for result in  closest_results:
+    for result[0] in  closest_results:
         # Extract text and metadata fields
         text = result.text
         metadata = result.metadata
