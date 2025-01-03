@@ -163,14 +163,15 @@ def process_pdf(pdf_file):
     return cleaned_text, reference_name
     
 
-def chunk_documents_with_references(Update_list, max_tokens=7000):
+def chunk_documents_with_references(Update_list):
     """Split documents into chunks based on token limit and add references."""
     chunks = []
     chunk_metadata = []
     for item in Update_list:
         tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
         tokens = tokenizer.encode(item.get("text"))
-        for i in range(0, len(tokens), max_tokens):
+        max_tokens=7000
+        for i in range(0, len(tokens)):
             chunk_tokens = tokens[i:i + max_tokens]
             chunk_text = tokenizer.decode(chunk_tokens)  # Convert tokens back to text
             chunks.append(chunk_text)
