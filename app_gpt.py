@@ -24,7 +24,7 @@ try:
     index_params={
         "index_type": "IVF_FLAT",
         "metric_type": "COSINE",
-        "params": {"nlist": 128}  # Adjust `nlist` based on dataset size (higher for larger datasets)
+        "params": {"nlist": 128},  # Adjust `nlist` based on dataset size (higher for larger datasets)
         collection.load()})
 
 except Exception as e:
