@@ -15,7 +15,7 @@ api_key = st.secrets["general"]["OPENAI_API_KEY"]
 tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
 # Zilliz Cloud connection details
 zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com"
-zillis_token = st.secrets["general"]["zillis_token"]
+zilliz_token = st.secrets["general"]["zillis_token"]
 
 collection_name = "Mycobacterium"
 embedding_field = "vector"  # Field name for embeddings in Zilliz
@@ -24,7 +24,7 @@ model = st.selectbox("Select Model", model_ids)
 client = openai.OpenAI(api_key=api_key)
 client_milvus = MilvusClient(
     uri="https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com",
-    token=zillis_token
+    token=zilliz_token
 )
 # Connect to Zilliz Cloud
 try:
