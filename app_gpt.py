@@ -23,54 +23,48 @@ except Exception as e:
 
 
 
-def get_embedding(text):
+def get_embedding(user_query):
     """Generate embedding for text using OpenAI."""
     try:
-        st.write(f"Generating embedding for: {text}")
+        
         embedding_response = openai.OpenAI(api_key=api_key).embeddings.create(
-            input=text,
+            input=user_query,
             model="text-embedding-3-small"
         )
-        vector = embedding_response.data[0].embedding
-        st.write(f"Generated embedding: {vector[:5]}... (truncated for display)")
-        return vector
+        user_vector = embedding_response.data[0].embedding
+        return user_vector
     except Exception as e:
         st.write(f"Error generating embedding: {e}")
         return None
 
-def query_zilliz(query_embedding, top_k=5):
+def query_zilliz(user_vector, top_k=5):
     """Query Zilliz database."""
     try:
-        st.write(f"Querying Zilliz with embedding: {query_embedding[:5]}... (truncated for display)")
-        results = collection.search(
-            data=[query_embedding],
+        
+        closest_results = collection.search(
+            data=[user_vector],
             anns_field="vector",
-            param={"metric_type": "COSINE", "params": {"nprobe": 10}},
+            param={"metric_type": "COSINE", "params": {"nprobe": 5}},
             limit=top_k,
             output_fields=["text", "metadata"] 
         )
       
-        return results
+        return  closest_results
     except Exception as e:
         st.write(f"Error querying Zilliz: {e}")
         return None
-def extract_relevant_data(results):
+def extract_relevant_data( closest_results):
     """Extract text and metadata from Zilliz search results."""
     retrieved_texts = []
-    for result in results:
-        for hit in result:  # Iterate through hits
-            try:
-                # Extract text and metadata fields
-                text = hit.text
-                metadata = hit.metadata
-                # Combine into a single string for the prompt
-                retrieved_texts.append(f"Text: {text}\nMetadata: {metadata}")
-            except Exception as e:
-                st.write(f"Error extracting data from result: {e}")
+    for result in  closest_results:
+        # Extract text and metadata fields
+        text = result.text
+        metadata = result.metadata
+        # Combine into a single string for the prompt
+        retrieved_texts.append(f"Text: {text}\nMetadata: {metadata}")
     return retrieved_texts
-def construct_prompt_with_references(user_query, references):
-    """Construct the prompt by including user query and retrieved references."""
-    references_str = "\n\n".join(references)
+def construct_prompt_with_references(user_query, retrieved_texts):
+    references_str = "\n\n".join(retrieved_texts)
     prompt = (
         f"User query: {user_query}\n\n"
         f"Retrieved references:\n{references_str}\n\n"
@@ -97,26 +91,26 @@ def get_response(prompt):
 # Streamlit App
 st.title("Debugging Zilliz Retrieval")
 
-user_input = st.text_input("Enter your query:")
+user_query = st.text_input("Enter your query:")
 
-if user_input:
+if user_query:
     # Step 1: Generate embedding
-    query_embedding = get_embedding(user_input)
+     user_vector = get_embedding(user_query)
 
-    if query_embedding:
+    if user_vector:
         # Step 2: Query Zilliz
-        zilliz_results = query_zilliz(query_embedding, top_k=5)
+        closest_results = query_zilliz(user_vector, top_k=5)
 
-        if zilliz_results:
+        if closest_results:
             # Step 3: Extract relevant data
-            retrieved_texts = extract_relevant_data(zilliz_results)
+            retrieved_texts = extract_relevant_data(closest_results)
 
             if retrieved_texts:
                 # Step 4: Construct prompt with references
-                prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
+                prompt = construct_prompt_with_references(user_query, retrieved_texts)
 
                 # Step 5: Get response from OpenAI
-                response = get_response(prompt_with_references)
+                response = get_response(prompt)
                 st.write(f"Response:\n{response}")
             else:
                 st.write("No relevant references found.")
