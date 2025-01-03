@@ -74,10 +74,28 @@ def construct_prompt_with_references(query, references):
     formatted_references = "\n".join([str(ref) for ref in references])
     prompt = (
         f"User query: {query}\n\n"
-       
-    )
+        f"Relevant information from the database:\n{formatted_references}\n\n"
+        "Please generate a response based on the above information.")
     st.write(f"Constructed prompt: {prompt}")
     return prompt
+def retrieve_texts_from_ids(hits):
+    """Retrieve text content for given hit IDs."""
+    retrieved_texts = []
+    for hit in hits:
+        try:
+            # Query for text content using Auto_id
+            result = collection.query(
+                expr=f"Auto_id == {hit.id}",  # Replace 'Auto_id' with your actual field name
+                output_fields=["text"]       # Retrieve the 'text' field
+            )
+            if result and len(result) > 0:
+                # Append the text content to the retrieved texts
+                retrieved_texts.append(result[0]["text"])
+            else:
+                st.write(f"No text found for Auto_id {hit.id}")
+        except Exception as e:
+            st.write(f"Error retrieving text for Auto_id {hit.id}: {e}")
+    return retrieved_texts
 
 # Streamlit App
 st.title("Debugging Zilliz Retrieval")
@@ -89,31 +107,24 @@ if user_input:
     query_embedding = get_embedding(user_input)
 
     if query_embedding:
-        # Query Zilliz
+        # Query Zilliz for vector search
         zilliz_results = query_zilliz(query_embedding, top_k=5)
 
     if zilliz_results:
-        retrieved_texts = []
-        for hits in zilliz_results:
-            for hit in hits:
-                try:
-                    # Ensure Auto_id is the correct field name
-                    result = collection.query(expr=f"Auto_id == {hit.id}", output_fields=["vector"])
-                    if result and len(result) > 0:
-                        
-    # Convert the retrieved content to a string if it's not already
-                        retrieved_texts.append(str(result[0]["vector"])) 
-                    else:
-                        st.write(f"No document found for ID {hit.id}")
-                except Exception as e:
-                    st.write(f"Error retrieving document for ID {hit.id}: {e}")
-    
-        # Construct the prompt with references
+        # Retrieve text content for the matching embeddings
+        retrieved_texts = retrieve_texts_from_ids(zilliz_results)
+        
         if retrieved_texts:
+            # Construct prompt with the retrieved references
             prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
-            response_with_references = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
+            response_with_references = get_response(
+                prompt_with_references,
+                "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I"
+            )
         else:
             st.write("No relevant references retrieved.")
+
+
 
 
 
