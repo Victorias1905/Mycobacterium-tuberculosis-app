@@ -136,8 +136,6 @@ if user_query:
 st.title("Update Database")
 uploaded_files = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
 preprocess_button=st.button("Preprocess", key="Preprocess")
-update_button = st.button('Update', key='Update')
-
 
 def process_pdf(pdf_file):
     if hasattr(pdf_file, 'name') and pdf_file.name:
@@ -220,9 +218,9 @@ if preprocess_button:
                 "metadata": metadata,  
             }
        
-        if update_button:
-            client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
-            st.write("Data inserted successfully!")
+        
+        client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
+        st.write("Data inserted successfully!")
     else:
         st.warning("Please upload at least one PDF file.")
 
