@@ -211,7 +211,7 @@ if preprocess_button:
         embeddings=generate_embeddings(chunks)
         vectors = [embedding.data[0] for embedding in embeddings] 
         vectors_float = [vector.embedding for vector in vectors]
-     else:
+    else:
         st.warning("Please upload at least one PDF file.")
        
 if update_button:
