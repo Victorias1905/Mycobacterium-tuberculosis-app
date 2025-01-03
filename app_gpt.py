@@ -177,6 +177,7 @@ def chunk_documents_with_references(Update_list):
             chunk_text = tokenizer.decode(chunk_tokens)  # Convert tokens back to text
             chunks.append(chunk_text)
             chunk_metadata.append({"filename": item.get("filename")})
+            i=i+max_tokens
     
     return chunks, chunk_metadata
 
