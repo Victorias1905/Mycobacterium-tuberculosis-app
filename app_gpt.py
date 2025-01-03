@@ -11,8 +11,7 @@ zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.
 zilliz_token = "641b977aa113eb7f095c50a472347f9f089f6ee89e1346d3ea316db3223c8cf9b4f42bfd705ccb1fad8d7b00d62f1b27bfe8a59e"
 collection_name = "Mycobacterium"
 embedding_field = "vector"  # Field name for embeddings in Zilliz
-client = openai.OpenAI(api_key=api_key)
-# Connect to Zilliz Cloud
+client = openai.OpenAI(api_key="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")# Connect to Zilliz Cloud
 try:
     connections.connect("default", uri=zilliz_uri, token=zilliz_token)
     collection = Collection(collection_name)
