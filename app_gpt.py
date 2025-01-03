@@ -215,18 +215,17 @@ if preprocess_button:
         st.warning("Please upload at least one PDF file.")
        
 if update_button:
-    try:
-        ids = list(range(len(chunks)))  # Generate unique IDs
-        for id,vector, chunk, metadata in zip(ids,vectors_float, chunks, chunk_metadata):
-            data_to_insert = {
-                "id": id,
-                "vector": vector,
-                "text": chunk,
-                "metadata": metadata,  
-            }
-        
-            client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
-        st.write("Data inserted successfully!")
+    ids = list(range(len(chunks)))  # Generate unique IDs
+    for id,vector, chunk, metadata in zip(ids,vectors_float, chunks, chunk_metadata):
+        data_to_insert = {
+            "id": id,
+            "vector": vector,
+            "text": chunk,
+            "metadata": metadata,  
+        }
+    
+        client_milvus.insert(collection_name="Mycobacterium", data=data_to_insert)
+    st.write("Data inserted successfully!")
     
 
 
