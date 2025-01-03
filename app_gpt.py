@@ -74,8 +74,7 @@ def construct_prompt_with_references(query, references):
     formatted_references = "\n".join([str(ref) for ref in references])
     prompt = (
         f"User query: {query}\n\n"
-        f"Relevant information from the database:\n{formatted_references}\n\n"
-        "Please generate a response based on the above information."
+       
     )
     st.write(f"Constructed prompt: {prompt}")
     return prompt
@@ -113,7 +112,6 @@ if user_input:
         if retrieved_texts:
             prompt_with_references = construct_prompt_with_references(user_input, retrieved_texts)
             response_with_references = get_response(prompt_with_references, "ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I")
-            st.write(f"Response with references: {response_with_references}")
         else:
             st.write("No relevant references retrieved.")
 
