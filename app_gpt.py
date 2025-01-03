@@ -52,15 +52,15 @@ def query_zilliz(user_vector, top_k=10):
     except Exception as e:
         st.write(f"Error querying Zilliz: {e}")
         return None
-def extract_relevant_data( closest_results):
-    """Extract text and metadata from Zilliz search results."""
+def extract_relevant_data(closest_results):
+    
     retrieved_texts = []
-    for result in  closest_results:
-        # Extract text and metadata fields
-        text = result[0].text
-        metadata = result[0].metadata
-        retrieved_texts.append({"text": text, "metadata": metadata})
-    st.write(len(closest_results))
+    for hits in closest_results:      # For each query
+        for hit in hits:             # For each hit within that query
+            text = hit.text
+            metadata = hit.metadata
+            retrieved_texts.append({"text": text, "metadata": metadata})
+    st.write(len(retrieved_texts))   
     return retrieved_texts
 def construct_prompt_with_references(user_query, retrieved_texts):
      references_str = "\n\n".join(
