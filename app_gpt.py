@@ -15,7 +15,7 @@ api_key = st.secrets["general"]["OPENAI_API_KEY"]
 tokenizer = tiktoken.encoding_for_model("text-embedding-3-small") 
 # Zilliz Cloud connection details
 zilliz_uri = "https://in03-03d63efede22046.serverless.gcp-us-west1.cloud.zilliz.com"
-zilliz_token = st.secrets["general"]["zillis_token"]
+zilliz_token = st.secrets["general"]["zilliz_token"]
 
 collection_name = "Mycobacterium"
 embedding_field = "vector"  # Field name for embeddings in Zilliz
