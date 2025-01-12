@@ -24,7 +24,9 @@ collection_name = "Mycobacterium"
 embedding_field = "vector"
 
 # Model selection
-model_ids = ["o1-2024-12-17","gpt-4o-2024-08-06"]
+model_ids = ["o1-2024-12-17","gpt-4o-2024-08-06","ft:gpt-4o-mini-2024-07-18:mtbc-project::Akwtgx7I", 
+             "ft:gpt-4o-mini-2024-07-18:mtbc-project::AkyZCr4h", 
+             "gpt-4o-mini-2024-07-18"]
 model = st.selectbox("Select Model", model_ids)
 
 client = openai.OpenAI(api_key=api_key)
